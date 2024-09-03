@@ -1,0 +1,24 @@
+package leostream
+
+// Pool definition defaults
+const CONFIG_POOL_RESTRICT_BY = "C"
+const CONFIG_POOL_ATTRIBUTE_JOIN = "A"
+
+var CONFIG_POOL_SERVERIDS = []int64{0}
+var CONFIG_POOL_PROVISION_THRESHOLD = int64(0)
+var CONFIG_POOL_PROVISION_TENANT_ID = int64(0)
+var CONFIG_POOL_PROVISION_VM_NAME_NEXT_VALUE = int64(0)
+var CONFIG_POOL_PROVISION_LIMITS_ENFORCE = int64(0)
+var CONFIG_POOL_MARK_DELETABLE = int64(0)
+
+// Pool provisioning
+var CONFIG_POOL_PROVISION_ON_OFF = int64(0)
+var CONFIG_POOL_PROVISION_MAX = int64(0)
+var CONFIG_POOL_PROVISION_VM_ID = int64(0)
+
+// Add the provision_server_id to the CONFIG_POOL_SERVERIDS
+var CONFIG_POOL_PROVISION_SERVER_ID = int64(0)
+
+// Poolassignment defaults
+var CONFIG_OFFER_FILTER_JOIN = "O"
+var CONFIG_OFFER_FILTER_LIST = []string{""}
