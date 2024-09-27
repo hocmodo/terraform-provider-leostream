@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 variable "center_name" {
   description = "Name of LeoStream Center"
   type        = string

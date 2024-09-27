@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package leostream
 
 import (
@@ -34,14 +36,18 @@ func (p *leostreamProvider) Metadata(_ context.Context, _ provider.MetadataReque
 // Schema defines the provider-level schema for configuration data.
 func (p *leostreamProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: "Interact with Leostream REST API",
 		Attributes: map[string]schema.Attribute{
 			"host": schema.StringAttribute{
+				Description: "URI for Leostream REST API.",
 				Optional: true,
 			},
 			"username": schema.StringAttribute{
+				Description: "Username for Leostream REST API.",
 				Optional: true,
 			},
 			"password": schema.StringAttribute{
+				Description: "Password for Leostream REST API.",
 				Optional:  true,
 				Sensitive: true,
 			},
@@ -51,7 +57,7 @@ func (p *leostreamProvider) Schema(_ context.Context, _ provider.SchemaRequest, 
 
 func (p *leostreamProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
 
-	tflog.Info(ctx, "Configuring HashiCups client")
+	tflog.Info(ctx, "Configuring Leostream client")
 
 	// Retrieve provider data from configuration
 	var config leostreamProviderModel

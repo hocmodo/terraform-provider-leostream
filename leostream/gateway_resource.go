@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package leostream
 
 import (
@@ -53,31 +55,42 @@ func (r *gatewayResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
+				Description: "Unique identifier for the gateway.",
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
+				Description: "Display name of the gateway.",
 				Optional: true,
 			},
 			"address": schema.StringAttribute{
+				Description: "Public IP address of the gateway.",
 				Optional: true,
 			},
 			"address_private": schema.StringAttribute{
+				Description: "Private IP address of the gateway.",
 				Optional: true,
 			},
 			"load_balancer_id": schema.Int64Attribute{
+				Description: "ID of the cluster associated with the gateway.",
 				Optional: true,
 				Computed: true,
 				Default:  int64default.StaticInt64(0),
 			},
 			"use_src_ip": schema.Int64Attribute{
+				Description: `Method of source IP filtering
+				0: do not use source IP filtering, but random port(default)
+				1: use source IP filtering, but same port on gateway and desktop
+				2: use source IP filtering, but random port on gateway
+				`,
 				Optional: true,
 				Computed: true,
 				Default:  int64default.StaticInt64(0),
 			},
 			"notes": schema.StringAttribute{
+				Description: "Notes for the gateway.",
 				Optional: true,
 			},
 		},

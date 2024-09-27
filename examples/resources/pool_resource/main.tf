@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 // This is an example of how to create a Leostream pool using Terraform.
 
 
@@ -20,23 +22,23 @@ provider "leostream" {
 
 // This block defines a Leostream pool resource.
 #resource "leostream_pool" "pl" {
-  # name         = "tst-us-rhel8-cloud-g4dn.2xl-pool"
-  # display_name = "TST | US | RHEL8-CLOUD | 8CPU | 32GB"
+# name         = "tst-us-rhel8-cloud-g4dn.2xl-pool"
+# display_name = "TST | US | RHEL8-CLOUD | 8CPU | 32GB"
 
-  # pool_definition = {
-  #   restrict_by = "A"
-  #   parent_pool_id = 4
-  #   server_ids = [2]
-  #   attributes = [
-  #     {
-  #       vm_table_field     = "name"
-  #       ad_attribute_field = ""
-  #       vm_gpu_field       = ""
-  #       text_to_match      = "tst-useast1-vdi-leo-rhel8-cloud-g4dn.2xl-"
-  #       condition_type     = "ct"
-  #     }
-  #   ]
-  # }
+# pool_definition = {
+#   restrict_by = "A"
+#   parent_pool_id = 4
+#   server_ids = [2]
+#   attributes = [
+#     {
+#       vm_table_field     = "name"
+#       ad_attribute_field = ""
+#       vm_gpu_field       = ""
+#       text_to_match      = "tst-useast1-vdi-leo-rhel8-cloud-g4dn.2xl-"
+#       condition_type     = "ct"
+#     }
+#   ]
+# }
 
 #   provision = {
 #     provision_server_id = 13
@@ -67,14 +69,14 @@ resource "leostream_pool" "awspool" {
   display_name = "Test"
 
   pool_definition = {
-    restrict_by = "A"
+    restrict_by    = "A"
     parent_pool_id = 1
-    server_ids = []
+    server_ids     = []
     attributes = [
       {
-        vm_table_field     = "server_id"
-        text_to_match      = "51"
-        condition_type     = "eq"
+        vm_table_field = "server_id"
+        text_to_match  = "51"
+        condition_type = "eq"
       }
     ]
   }
@@ -87,12 +89,12 @@ resource "leostream_pool" "awspool" {
       type = "amazon"
       id   = 51
     }
-    provision_on_off = 0
-    provision_max = 0
-    provision_threshold = 0
-    provision_vm_display_name = "Image name:'emr 5.23.0-ami-roller-7 hvm ebs'"
+    provision_on_off             = 0
+    provision_max                = 0
+    provision_threshold          = 0
+    provision_vm_display_name    = "Image name:'emr 5.23.0-ami-roller-7 hvm ebs'"
     provision_vm_name_next_value = 8
-    provision_vm_id = 15
-    mark_deletable = 1
+    provision_vm_id              = 15
+    mark_deletable               = 1
   }
 }

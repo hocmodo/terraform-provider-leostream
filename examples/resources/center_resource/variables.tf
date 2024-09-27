@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 variable "center_password" {
   description = "AWS center password"
   type        = string

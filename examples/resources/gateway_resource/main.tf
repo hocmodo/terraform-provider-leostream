@@ -14,8 +14,13 @@ provider "leostream" {
   password = var.leostream_api_password
 }
 
-data "leostream_centers" "centers" {}
+resource "leostream_gateway" "gw" {
+  name            = "gateway_us_east_1_1_1"
+  address         = "192.168.178.105"
+  address_private = ""
+  notes           = "This is a gateway in EU-WEST-1"
+}
 
-output "centers_output" {
-  value = data.leostream_centers.centers
+output "leostream_gateway" {
+  value = leostream_gateway.gw
 }

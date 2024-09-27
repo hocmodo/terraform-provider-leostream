@@ -1,3 +1,5 @@
+// Copyright (c) HashiCorp, Inc.
+
 package leostream
 
 import (
@@ -46,12 +48,14 @@ func (r *centerResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
+				Description: "Unique identifier for the center.",
 				Computed: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"center_definition": schema.SingleNestedAttribute{
+				Description: "Center definition",
 				Optional: true,
 				Computed: true,
 				Default: objectdefault.StaticValue(types.ObjectValueMust(
@@ -59,87 +63,104 @@ func (r *centerResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 				),
 				Attributes: map[string]schema.Attribute{
 					"name": schema.StringAttribute{
+						Description: "Name of the center.",
 						Required: true,
 						Computed: false,
 						//Default:  stringdefault.StaticString(""),
 					},
 					"allow_rogue": schema.Int64Attribute{
+						Description: "Assign rogue users to desktops from this center.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"allow_rogue_policy_id": schema.Int64Attribute{
+						Description: "Policy for rogue users.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"continuous_autotag": schema.Int64Attribute{
+						Description: "Apply auto-tags every time center is scanned.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"init_unavailable": schema.Int64Attribute{
+						Description: "Initialize desktops as unavailable.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"new_as_deletable": schema.Int64Attribute{
+						Description: "New desktops are deletable.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"notes": schema.StringAttribute{
+						Description: "Notes for the center.",
 						Optional: true,
 						Computed: true,
 						Default:  stringdefault.StaticString(""),
 					},
 					"offer_vms": schema.Int64Attribute{
+						Description: "Offer VMs to users from this center.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"poll_interval": schema.Int64Attribute{
+						Description: "Interval in minutes to poll the center, 0 is don't poll.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"proxy_address": schema.StringAttribute{
+						Description: "Proxy address for the center.",
 						Optional: true,
 						Computed: true,
 						Default:  stringdefault.StaticString(""),
 					},
 					"type": schema.StringAttribute{
+						Description: "Type of the center. Currently only 'amazon' is supported.",
 						Optional: true,
 						Computed: true,
 						Default:  stringdefault.StaticString("amazon"),
 					},
 					"vc_auth_method": schema.StringAttribute{
+						Description: "Authorization method: For Amazon centers, either Access Key or any attached IAM role: 'access_key' or 'attached_role'.",
 						Optional: true,
 						Computed: true,
 						Default:  stringdefault.StaticString(""),
 					},
 					"vc_datacenter": schema.StringAttribute{
+						Description: "AWS region or a predefined value _custom if custom region is used.",
 						Optional: true,
 						Computed: true,
 						Default:  stringdefault.StaticString(""),
 					},
 					"vc_name": schema.StringAttribute{
+						Description: "The Access Key ID for a user with permission to access EC2.",
 						Optional: true,
 						Computed: true,
 						Default:  stringdefault.StaticString(""),
 					},
 					"vc_password": schema.StringAttribute{
+						Description: "The Secret Access Key for the user.",
 						Optional:  true,
 						Computed:  true,
 						Sensitive: true,
 						Default:   stringdefault.StaticString("**********"),
 					},
 					"wait_inst_status": schema.Int64Attribute{
+						Description: "Wait for instance status to be running before assigning desktops.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),
 					},
 					"wait_sys_status": schema.Int64Attribute{
+						Description: "Wait for system status to be valid before assigning desktops.",
 						Optional: true,
 						Computed: true,
 						Default:  int64default.StaticInt64(0),

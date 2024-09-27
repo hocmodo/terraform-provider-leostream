@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 terraform {
   required_providers {
     leostream = {
@@ -12,13 +14,8 @@ provider "leostream" {
   password = var.leostream_api_password
 }
 
-resource "leostream_gateway" "gw" {
-  name = "gateway_us_east_1_1_1"
-  address = "192.168.178.105"
-  address_private = ""
-  notes = "This is a gateway in EU-WEST-1"
-}
+data "leostream_gateways" "gateway_list" {}
 
-output "leostream_gateway" {
-  value = leostream_gateway.gw
+output "gateway_list_output" {
+  value = data.leostream_gateways.gateway_list
 }
