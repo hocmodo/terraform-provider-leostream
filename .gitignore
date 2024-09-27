@@ -39,7 +39,4 @@ override.tf.json
 .terraformrc
 terraform.rc
 terraform
-go.mod
-go.sum
-go.mod
 secret.tfvars
