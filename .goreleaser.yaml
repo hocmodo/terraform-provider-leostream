@@ -23,6 +23,12 @@ builds:
       - windows
       - darwin
 
+release:
+  disable: false
+  github:
+    owner: hocmodo
+    name: terraform-provider-leostream
+
 archives:
   - format: tar.gz
     # this name template makes the OS and Arch compatible with the results of `uname`.
