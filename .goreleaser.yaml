@@ -1,52 +1,85 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
-
-# The lines below are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
-
 version: 2
-
+archives:
+  - files:
+      # Ensure only built binary and license file are archived
+      - src: LICENSE
+        dst: LICENSE.txt
+    format: zip
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
 before:
   hooks:
-    # You may remove this if you don't use go modules.
-    - go mod tidy
-    # you may remove this if you don't need go generate
-    - go generate ./...
-
+    - 'go mod download'
 builds:
-  - env:
+  -
+    # Binary naming only required for Terraform CLI 0.12
+    binary: '{{ .ProjectName }}_v{{ .Version }}_x5'
+    env:
       - CGO_ENABLED=0
+    flags:
+      - -trimpath
     goos:
-      - linux
-      - windows
       - darwin
-
+      - freebsd
+      - linux
+      - openbsd
+      - windows
+    goarch:
+      - '386'
+      - amd64
+      - arm
+      - arm64
+    ignore:
+      - goarch: arm
+        goos: windows
+      - goarch: arm64
+        goos: freebsd
+      - goarch: arm64
+        goos: windows
+      - goarch: arm64
+        goos: openbsd
+    ldflags:
+      - -s -w -X 'github.com/hashicorp/terraform-provider-aws/version.ProviderVersion={{ .Version }}'
+    mod_timestamp: '{{ .CommitTimestamp }}'
+checksum:
+  algorithm: sha256
+  extra_files:
+    - glob: 'terraform-registry-manifest.json'
+      name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+publishers:
+  - checksum: true
+    # Terraform CLI 0.10 - 0.11 perform discovery via HTTP headers on releases.hashicorp.com
+    # For providers which have existed since those CLI versions, exclude
+    # discovery by setting the protocol version headers to 5.
+    env:
+      - HC_RELEASES_HOST={{ .Env.HC_RELEASES_HOST }}
+      - HC_RELEASES_KEY={{ .Env.HC_RELEASES_KEY }}
+    cmd: |
+      hc-releases upload -product {{ .ProjectName }} -version {{ .Version }} -file={{ .ArtifactPath }}={{ .ArtifactName }} -header=x-terraform-protocol-version=5 -header=x-terraform-protocol-versions=5.0
+    extra_files:
+      - glob: 'terraform-registry-manifest.json'
+        name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
+    name: upload
+    signature: true
 release:
   disable: false
   github:
     owner: hocmodo
     name: terraform-provider-leostream
-
-archives:
-  - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of `uname`.
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        format: zip
-
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
+  extra_files:
+    - glob: 'terraform-registry-manifest.json'
+      name_template: '{{ .ProjectName }}_{{ .Version }}_manifest.json'
+  ids:
+    - none
+signs:
+  - args: ["sign", "--dearmor", "--file", "${artifact}", "--out", "${signature}"]
+    artifacts: checksum
+    cmd: signore
+    signature: ${artifact}.sig
+  - args: ["sign", "--dearmor", "--file", "${artifact}", "--out", "${signature}"]
+    artifacts: checksum
+    cmd: signore
+    id: key-id
+    signature: ${artifact}.72D7468F.sig
+snapshot:
+  version_template: "{{ .Tag }}-next"
