@@ -17,7 +17,7 @@ import (
 )
 
 // poolResourceModel maps the resource schema data.
-type poolResourceModel struct {
+type awsPoolResourceModel struct {
 	ID                         types.String `tfsdk:"id"`
 	Name                       types.String `tfsdk:"name"`
 	Display_name               types.String `tfsdk:"display_name"`
@@ -54,7 +54,7 @@ type poolResourceModel struct {
 // nested attributes objects
 
 // poolDefinitionModel maps filtering schema data
-type poolDefinitionModel struct {
+type awsPoolDefinitionModel struct {
 	Restrict_by         types.String `tfsdk:"restrict_by"`
 	Pool_attribute_join types.String `tfsdk:"pool_attribute_join"`
 	Server_ids          types.List   `tfsdk:"server_ids"`
@@ -65,7 +65,7 @@ type poolDefinitionModel struct {
 }
 
 // attrTypes - return attribute types for this model
-func (o poolDefinitionModel) attrTypes() map[string]attr.Type {
+func (o awsPoolDefinitionModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"restrict_by":         types.StringType,
 		"pool_attribute_join": types.StringType,
@@ -73,12 +73,12 @@ func (o poolDefinitionModel) attrTypes() map[string]attr.Type {
 		"never_rogue":         types.Int64Type,
 		"use_vmotion":         types.Int64Type,
 		"parent_pool_id":      types.Int64Type,
-		"attributes":          types.ListType{ElemType: types.ObjectType{AttrTypes: attributesModel{}.attrTypes()}},
+		"attributes":          types.ListType{ElemType: types.ObjectType{AttrTypes: awsAttributesModel{}.attrTypes()}},
 	}
 }
 
 // defaultObject - return default object for this model
-func (o poolDefinitionModel) defaultObject() map[string]attr.Value {
+func (o awsPoolDefinitionModel) defaultObject() map[string]attr.Value {
 	bootstrap_serverids := convertToAttrInt64(CONFIG_POOL_SERVERIDS)
 
 	return map[string]attr.Value{
@@ -89,12 +89,12 @@ func (o poolDefinitionModel) defaultObject() map[string]attr.Value {
 		"never_rogue":    types.Int64Value(0),
 		"use_vmotion":    types.Int64Value(0),
 		"parent_pool_id": types.Int64Value(0),
-		"attributes":     types.ListNull(types.ObjectType{AttrTypes: attributesModel{}.attrTypes()}),
+		"attributes":     types.ListNull(types.ObjectType{AttrTypes: awsAttributesModel{}.attrTypes()}),
 	}
 }
 
 // poolProvisionModel maps filtering schema data
-type provisionModel struct {
+type awsProvisionModel struct {
 	Provision_on_off             types.Int64  `tfsdk:"provision_on_off"`
 	Provision_max                types.Int64  `tfsdk:"provision_max"`
 	Provision_vm_id              types.Int64  `tfsdk:"provision_vm_id"`
@@ -102,7 +102,7 @@ type provisionModel struct {
 	Provision_vm_name            types.String `tfsdk:"provision_vm_name"`
 	Provision_threshold          types.Int64  `tfsdk:"provision_threshold"`
 	Provision_tenant_id          types.Int64  `tfsdk:"provision_tenant_id"`
-	Provision_vm_name_next_value types.Int64  `tfsdk:"provision_vm_name_next_value"`
+	//Provision_vm_name_next_value types.Int64  `tfsdk:"provision_vm_name_next_value"`
 	Provision_vm_display_name    types.String `tfsdk:"provision_vm_display_name"`
 	Provision_url                types.String `tfsdk:"provision_url"`
 	Provision_limits_enforce     types.Int64  `tfsdk:"provision_limits_enforce"`
@@ -111,7 +111,7 @@ type provisionModel struct {
 }
 
 // attrTypes - return attribute types for this model
-func (o provisionModel) attrTypes() map[string]attr.Type {
+func (o awsProvisionModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"provision_on_off":             types.Int64Type,
 		"provision_max":                types.Int64Type,
@@ -120,17 +120,16 @@ func (o provisionModel) attrTypes() map[string]attr.Type {
 		"provision_vm_name":            types.StringType,
 		"provision_threshold":          types.Int64Type,
 		"provision_tenant_id":          types.Int64Type,
-		"provision_vm_name_next_value": types.Int64Type,
 		"provision_vm_display_name":    types.StringType,
 		"provision_url":                types.StringType,
 		"provision_limits_enforce":     types.Int64Type,
 		"mark_deletable":               types.Int64Type,
-		"center":                       types.ObjectType{AttrTypes: centerModel{}.attrTypes()},
+		"center":                       types.ObjectType{AttrTypes: awsCenterModel{}.attrTypes()},
 	}
 }
 
 // defaultObject - return default object for this model representing the provision object
-func (o provisionModel) defaultObject() map[string]attr.Value {
+func (o awsProvisionModel) defaultObject() map[string]attr.Value {
 	return map[string]attr.Value{
 		"provision_on_off":             types.Int64Value(CONFIG_POOL_PROVISION_ON_OFF),
 		"provision_max":                types.Int64Value(CONFIG_POOL_PROVISION_MAX),
@@ -139,17 +138,16 @@ func (o provisionModel) defaultObject() map[string]attr.Value {
 		"provision_vm_name":            types.StringValue(""),
 		"provision_threshold":          types.Int64Value(CONFIG_POOL_PROVISION_THRESHOLD),
 		"provision_tenant_id":          types.Int64Value(CONFIG_POOL_PROVISION_TENANT_ID),
-		"provision_vm_name_next_value": types.Int64Value(CONFIG_POOL_PROVISION_VM_NAME_NEXT_VALUE),
 		"provision_vm_display_name":    types.StringValue(""),
 		"provision_url":                types.StringValue(""),
 		"provision_limits_enforce":     types.Int64Value(CONFIG_POOL_PROVISION_LIMITS_ENFORCE),
 		"mark_deletable":               types.Int64Value(CONFIG_POOL_MARK_DELETABLE),
-		"center":                       types.ObjectValueMust(centerModel{}.attrTypes(), centerModel{}.defaultObject()),
+		"center":                       types.ObjectValueMust(awsCenterModel{}.attrTypes(), awsCenterModel{}.defaultObject()),
 	}
 }
 
 // centerModel maps center schema data
-type centerModel struct {
+type awsCenterModel struct {
 	ID               types.Int64  `tfsdk:"id"`
 	Name             types.String `tfsdk:"name"`
 	Type             types.String `tfsdk:"type"`
@@ -162,7 +160,7 @@ type centerModel struct {
 }
 
 // attrTypes - return attribute types for this model
-func (o centerModel) attrTypes() map[string]attr.Type {
+func (o awsCenterModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"id":               types.Int64Type,
 		"name":             types.StringType,
@@ -177,7 +175,7 @@ func (o centerModel) attrTypes() map[string]attr.Type {
 }
 
 // defaultObject - return default object for this model
-func (o centerModel) defaultObject() map[string]attr.Value {
+func (o awsCenterModel) defaultObject() map[string]attr.Value {
 	return map[string]attr.Value{
 		"id":               types.Int64Value(0),
 		"name":             types.StringValue(""),
@@ -192,7 +190,7 @@ func (o centerModel) defaultObject() map[string]attr.Value {
 }
 
 // attributesModel maps pool definition attribute schema data
-type attributesModel struct {
+type awsAttributesModel struct {
 	Vm_table_field     types.String `tfsdk:"vm_table_field"`
 	Ad_attribute_field types.String `tfsdk:"ad_attribute_field"`
 	Vm_gpu_field       types.String `tfsdk:"vm_gpu_field"`
@@ -201,7 +199,7 @@ type attributesModel struct {
 }
 
 // attrTypes - return attribute types for this model
-func (o attributesModel) attrTypes() map[string]attr.Type {
+func (o awsAttributesModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
 		"vm_table_field":     types.StringType,
 		"ad_attribute_field": types.StringType,
@@ -223,7 +221,7 @@ func (o attributesModel) attrTypes() map[string]attr.Type {
 // }
 
 // common `Read` function for both data source and resource
-func (o *poolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
+func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
 	//Pool CONFIG
 	//get refreshed pool config value from Leostream API
 	poolConfig, err := client.GetPool(id)
@@ -243,7 +241,7 @@ func (o *poolResourceModel) Read(ctx context.Context, client leostream.Client, d
 	o.Running_desktops_threshold = types.Int64Value(poolConfig.Running_desktops_threshold)
 
 	// Map pool definition to state
-	var statePoolDefinition poolDefinitionModel
+	var statePoolDefinition awsPoolDefinitionModel
 	statePoolDefinition.Restrict_by = types.StringValue(poolConfig.Pool_definition.Restrict_by)
 	statePoolDefinition.Pool_attribute_join = types.StringValue(poolConfig.Pool_definition.Pool_attribute_join)
 	statePoolDefinition.Server_ids, *diags = types.ListValueFrom(ctx, types.Int64Type, poolConfig.Pool_definition.Server_ids)
@@ -252,10 +250,10 @@ func (o *poolResourceModel) Read(ctx context.Context, client leostream.Client, d
 	statePoolDefinition.Parent_pool_id = types.Int64Value(poolConfig.Pool_definition.Parent_pool_id)
 
 	// Create a slice of attributesModel called statePoolDefinitionAttributes
-	var statePoolDefinitionAttributes []attributesModel
+	var statePoolDefinitionAttributes []awsAttributesModel
 	// Loop through the poolConfig.Pool_definition.Attributes and assign the values to the stateAttributes
 	for _, attribute := range poolConfig.Pool_definition.Attributes {
-		var stateAttributes attributesModel
+		var stateAttributes awsAttributesModel
 		stateAttributes.Vm_table_field = types.StringValue(attribute.Vm_table_field)
 		stateAttributes.Ad_attribute_field = types.StringValue(attribute.Ad_attribute_field)
 		stateAttributes.Vm_gpu_field = types.StringValue(attribute.Vm_gpu_field)
@@ -267,13 +265,13 @@ func (o *poolResourceModel) Read(ctx context.Context, client leostream.Client, d
 
 	// Assign the list to the statePoolDefinitionAttributes list value in the statePoolDefinition
 	// convert to a list
-	statePoolDefinition.Attributes, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: attributesModel{}.attrTypes()}, statePoolDefinitionAttributes)
+	statePoolDefinition.Attributes, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: awsAttributesModel{}.attrTypes()}, statePoolDefinitionAttributes)
 
 	//Add pool definition to pool model
-	o.Pool_definition, _ = types.ObjectValueFrom(ctx, poolDefinitionModel{}.attrTypes(), &statePoolDefinition)
+	o.Pool_definition, _ = types.ObjectValueFrom(ctx, awsPoolDefinitionModel{}.attrTypes(), &statePoolDefinition)
 
 	// Handle provision attribute
-	var stateProvision provisionModel
+	var stateProvision awsProvisionModel
 	stateProvision.Provision_on_off = types.Int64Value(poolConfig.Provision.Provision_on_off)
 	stateProvision.Provision_max = types.Int64Value(poolConfig.Provision.Provision_max)
 	stateProvision.Provision_vm_id = types.Int64Value(poolConfig.Provision.Provision_vm_id)
@@ -281,14 +279,16 @@ func (o *poolResourceModel) Read(ctx context.Context, client leostream.Client, d
 	stateProvision.Provision_vm_name = types.StringValue(poolConfig.Provision.Provision_vm_name)
 	stateProvision.Provision_threshold = types.Int64Value(poolConfig.Provision.Provision_threshold)
 	stateProvision.Provision_tenant_id = types.Int64Value(poolConfig.Provision.Provision_tenant_id)
-	stateProvision.Provision_vm_name_next_value = types.Int64Value(poolConfig.Provision.Provision_vm_name_next_value)
+	//stateProvision.Provision_vm_name_next_value = types.Int64Value(poolConfig.Provision.Provision_vm_name_next_value)
 	stateProvision.Provision_vm_display_name = types.StringValue(poolConfig.Provision.Provision_vm_display_name)
 	stateProvision.Provision_url = types.StringValue(poolConfig.Provision.Provision_url)
 	stateProvision.Provision_limits_enforce = types.Int64Value(poolConfig.Provision.Provision_limits_enforce)
 	stateProvision.Mark_deletable = types.Int64Value(poolConfig.Provision.Mark_deletable)
 
+	// if poolConfig.Provision.Center is not null, then unpack the center attributes
+	if poolConfig.Provision.Center != nil {
 	// Handle center attribute
-	var stateCenter centerModel
+	var stateCenter awsCenterModel
 	stateCenter.ID = types.Int64Value(poolConfig.Provision.Center.ID)
 	stateCenter.Name = types.StringValue(poolConfig.Provision.Center.Name)
 	stateCenter.Type = types.StringValue(poolConfig.Provision.Center.Type)
@@ -300,15 +300,17 @@ func (o *poolResourceModel) Read(ctx context.Context, client leostream.Client, d
 	stateCenter.Aws_vpc_id = types.StringValue(poolConfig.Provision.Center.Aws_vpc_id)
 
 	// Add center to provision model
-	stateProvision.Center, _ = types.ObjectValueFrom(ctx, centerModel{}.attrTypes(), &stateCenter)
+	stateProvision.Center, _ = types.ObjectValueFrom(ctx, awsCenterModel{}.attrTypes(), &stateCenter)
+
+	}
 
 	// Add provision to pool model
-	o.Provision, _ = types.ObjectValueFrom(ctx, provisionModel{}.attrTypes(), &stateProvision)
+	o.Provision, _ = types.ObjectValueFrom(ctx, awsProvisionModel{}.attrTypes(), &stateProvision)
 
 }
 
 // `Create` function for the resource
-func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel, state *poolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
+func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourceModel, state *awsPoolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -321,7 +323,7 @@ func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel
 	poolConfig.Running_desktops_threshold = plan.Running_desktops_threshold.ValueInt64()
 
 	// Unpack nested attributes from plan for the pool definition
-	var planPoolDefinition poolDefinitionModel
+	var planPoolDefinition awsPoolDefinitionModel
 	*diags = plan.Pool_definition.As(ctx, &planPoolDefinition, basetypes.ObjectAsOptions{})
 	if diags.HasError() {
 		return nil
@@ -360,7 +362,7 @@ func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel
 	poolDefinitionConfig.Parent_pool_id = planPoolDefinition.Parent_pool_id.ValueInt64()
 
 	// Instantiate empty object for storing plan data for the attributes object in the pool definition object in the pool config
-	var planAttributes []attributesModel
+	var planAttributes []awsAttributesModel
 
 	// Populate pool_definition Attributes field in empty object from plan (but only if it exists)
 	// todo: what is the default value for Attributes? empty null object?
@@ -396,7 +398,7 @@ func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel
 	poolConfig.Pool_definition = &poolDefinitionConfig
 
 	// Unpack nested attributes from plan for the provision object in the pool config
-	var planProvision provisionModel
+	var planProvision awsProvisionModel
 	*diags = plan.Provision.As(ctx, &planProvision, basetypes.ObjectAsOptions{})
 	if diags.HasError() {
 		return nil
@@ -412,7 +414,7 @@ func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel
 	provisionConfig.Provision_vm_name = planProvision.Provision_vm_name.ValueString()
 	provisionConfig.Provision_threshold = planProvision.Provision_threshold.ValueInt64()
 	provisionConfig.Provision_tenant_id = planProvision.Provision_tenant_id.ValueInt64()
-	provisionConfig.Provision_vm_name_next_value = planProvision.Provision_vm_name_next_value.ValueInt64()
+	//_value = planProvision.Provision_vm_name_next_value.ValueInt64()
 	provisionConfig.Provision_vm_display_name = planProvision.Provision_vm_display_name.ValueString()
 	provisionConfig.Provision_url = planProvision.Provision_url.ValueString()
 	provisionConfig.Provision_limits_enforce = planProvision.Provision_limits_enforce.ValueInt64()
@@ -421,7 +423,7 @@ func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel
 	// Object for storing plan data for the center object in the provision object of the pool config
 	var centerConfig leostream.PoolAwsCenter
 
-	var planCenter centerModel
+	var planCenter awsCenterModel
 	if !planProvision.Center.IsNull() {
 		*diags = planProvision.Center.As(ctx, &planCenter, basetypes.ObjectAsOptions{})
 	}
@@ -455,7 +457,7 @@ func (r *poolResource) CreateNested(ctx context.Context, plan *poolResourceModel
 }
 
 // `Update` function for the resource
-func (r *poolResource) UpdateNested(ctx context.Context, plan *poolResourceModel, state *poolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
+func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourceModel, state *awsPoolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -468,7 +470,7 @@ func (r *poolResource) UpdateNested(ctx context.Context, plan *poolResourceModel
 	poolConfig.Running_desktops_threshold = plan.Running_desktops_threshold.ValueInt64()
 
 	// Unpack nested attributes from plan for the pool definition
-	var planPoolDefinition poolDefinitionModel
+	var planPoolDefinition awsPoolDefinitionModel
 	*diags = plan.Pool_definition.As(ctx, &planPoolDefinition, basetypes.ObjectAsOptions{})
 	if diags.HasError() {
 		return nil
@@ -495,7 +497,7 @@ func (r *poolResource) UpdateNested(ctx context.Context, plan *poolResourceModel
 	poolDefinitionConfig.Parent_pool_id = planPoolDefinition.Parent_pool_id.ValueInt64()
 
 	// Instantiate empty object for storing plan data for the attributes object in the pool definition object in the pool config
-	var planAttributes []attributesModel
+	var planAttributes []awsAttributesModel
 
 	// Populate pool_definition Attributes field in empty object from plan (but only if it exists)
 	// todo: what is the default value for Attributes? empty null object?
@@ -531,7 +533,7 @@ func (r *poolResource) UpdateNested(ctx context.Context, plan *poolResourceModel
 	poolConfig.Pool_definition = &poolDefinitionConfig
 
 	// unpack nested attributes from plan for the provision object in the pool config
-	var planProvision provisionModel
+	var planProvision awsProvisionModel
 	*diags = plan.Provision.As(ctx, &planProvision, basetypes.ObjectAsOptions{})
 	if diags.HasError() {
 		return nil
@@ -547,7 +549,7 @@ func (r *poolResource) UpdateNested(ctx context.Context, plan *poolResourceModel
 	provisionConfig.Provision_vm_name = planProvision.Provision_vm_name.ValueString()
 	provisionConfig.Provision_threshold = planProvision.Provision_threshold.ValueInt64()
 	provisionConfig.Provision_tenant_id = planProvision.Provision_tenant_id.ValueInt64()
-	provisionConfig.Provision_vm_name_next_value = planProvision.Provision_vm_name_next_value.ValueInt64()
+	//provisionConfig.Provision_vm_name_next_value = planProvision.Provision_vm_name_next_value.ValueInt64()
 	provisionConfig.Provision_vm_display_name = planProvision.Provision_vm_display_name.ValueString()
 	provisionConfig.Provision_url = planProvision.Provision_url.ValueString()
 	provisionConfig.Provision_limits_enforce = planProvision.Provision_limits_enforce.ValueInt64()
@@ -556,7 +558,7 @@ func (r *poolResource) UpdateNested(ctx context.Context, plan *poolResourceModel
 	// unpack nested attributes from plan for the center object in provision object in the pool config
 	var centerConfig leostream.PoolAwsCenter
 
-	var planCenter centerModel
+	var planCenter awsCenterModel
 	if !planProvision.Center.IsNull() {
 		*diags = planProvision.Center.As(ctx, &planCenter, basetypes.ObjectAsOptions{})
 	}

@@ -29,28 +29,28 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ resource.Resource                = &poolResource{}
-	_ resource.ResourceWithConfigure   = &poolResource{}
-	_ resource.ResourceWithImportState = &poolResource{}
+	_ resource.Resource                = &basicPoolResource{}
+	_ resource.ResourceWithConfigure   = &basicPoolResource{}
+	_ resource.ResourceWithImportState = &basicPoolResource{}
 )
 
 // NewPoolResource is a helper function to simplify the provider implementation.
-func NewPoolResource() resource.Resource {
-	return &poolResource{}
+func NewBasicPoolResource() resource.Resource {
+	return &basicPoolResource{}
 }
 
 // poolResource is the resource implementation.
-type poolResource struct {
+type basicPoolResource struct {
 	client *leostream.Client
 }
 
 // Metadata returns the resource type name.
-func (r *poolResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_pool"
+func (r *basicPoolResource) Metadata(_ context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_basic_pool"
 }
 
 // Schema defines the schema for the resource.
-func (r *poolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *basicPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
@@ -86,23 +86,16 @@ func (r *poolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 				Optional: true,
 				Computed: true,
 				Default: objectdefault.StaticValue(types.ObjectValueMust(
-					poolDefinitionModel{}.attrTypes(), poolDefinitionModel{}.defaultObject()),
+					basicPoolDefinitionModel{}.attrTypes(), basicPoolDefinitionModel{}.defaultObject()),
 				),
 				Attributes: map[string]schema.Attribute{
 					"restrict_by": schema.StringAttribute{
 						Description: `Restrict by:
 						A = by attribute (default)
-						T = by tag
-						C = by centers
-						E = vSphere hosts
-						L = vSphere clusters
-						V = vSphere resource pools
-						Z = LDAP attributes
-						H = ad hoc list (selection from parent pool)
 						`,
 						Optional: true,
 						Computed: true,
-						Default:  stringdefault.StaticString("C"),
+						Default:  stringdefault.StaticString("A"),
 					},
 					"server_ids": schema.ListAttribute{
 						Description: "List of tag IDs defining this pool",
@@ -268,7 +261,7 @@ func (r *poolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 				Optional: true,
 				Computed: true,
 				Default: objectdefault.StaticValue(types.ObjectValueMust(
-					provisionModel{}.attrTypes(), provisionModel{}.defaultObject()),
+					basicProvisionModel{}.attrTypes(), basicProvisionModel{}.defaultObject()),
 				),
 				Attributes: map[string]schema.Attribute{
 					"provision_on_off": schema.Int64Attribute{
@@ -334,83 +327,14 @@ func (r *poolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 					"provision_vm_display_name": schema.StringAttribute{
 						Description: "The display name of the VM to be provisioned.",
 						Optional: true,
+						Computed: true,
+						Default:  stringdefault.StaticString(""),
 					},
 					"provision_vm_name": schema.StringAttribute{
 						Description: "The name of the VM to be provisioned.",
 						Optional: true,
-					},
-					"center": schema.SingleNestedAttribute{
-						Description: `Container for parameters related to Center. Offically:
-						Google (object)
-						or RHEV (object)
-						or Scale (object)
-						or OpenStack (object)
-						or (Amazon AWS (Provision from image (object)
-						or Provision from launch template (object)))
-						or Azure (object)
-						or vCenter (object)
-						or ProvisionCenter (null) (ProvisionCenter).
-						!This versoim of the provider only supports AWS.`,
-						Optional: true,
 						Computed: true,
-						Default: objectdefault.StaticValue(types.ObjectValueMust(
-							centerModel{}.attrTypes(), centerModel{}.defaultObject()),
-						),
-						Attributes: map[string]schema.Attribute{
-							"id": schema.Int64Attribute{
-								Description: "Unique identifier for the center.",
-								Optional: true,
-							},
-							"name": schema.StringAttribute{
-								Description: "Name of the center.",
-								Optional: true,
-								Computed: false,
-								//Default:  stringdefault.StaticString(""),
-							},
-							"type": schema.StringAttribute{
-								Description: "Type of the center. Currently only AWS is supported: amazon",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
-							},
-							"aws_size": schema.StringAttribute{
-								Description: `The size of the instance to provision.
-								eg. t2.micro`,
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
-							},
-							"provision_method": schema.StringAttribute{
-								Description: "The method of provisioning. Currently only 'image' is supported.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString("image"),
-							},
-							"aws_iam_name": schema.StringAttribute{
-								Description: "The name of the IAM role to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
-							},
-							"aws_sub_net": schema.StringAttribute{
-								Description: "The subnet ID to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
-							},
-							"aws_sec_group": schema.StringAttribute{
-								Description: "The security group name to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
-							},
-							"aws_vpc_id": schema.StringAttribute{
-								Description: "The VPC ID to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
-							},
-						},
+						Default:  stringdefault.StaticString(""),
 					},
 				},
 			},
@@ -419,7 +343,7 @@ func (r *poolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp 
 }
 
 // Configure adds the provider configured client to the resource.
-func (r *poolResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
+func (r *basicPoolResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	if req.ProviderData == nil {
 		return
 	}
@@ -439,10 +363,10 @@ func (r *poolResource) Configure(_ context.Context, req resource.ConfigureReques
 }
 
 // Create a new resource.
-func (r *poolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+func (r *basicPoolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	// retrieve values from plan
 
-	var plan poolResourceModel
+	var plan basicPoolResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -450,7 +374,7 @@ func (r *poolResource) Create(ctx context.Context, req resource.CreateRequest, r
 	}
 
 	// empty state as it's a create operation
-	var state poolResourceModel
+	var state basicPoolResourceModel
 
 	// defer to common function to create or update the resource
 
@@ -473,10 +397,10 @@ func (r *poolResource) Create(ctx context.Context, req resource.CreateRequest, r
 }
 
 // Read resource information.
-func (r *poolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+func (r *basicPoolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
 	// Retrieve values from state
-	var state poolResourceModel
+	var state basicPoolResourceModel
 	tflog.Info(ctx, "Performing state get on pool resource")
 
 	diags := req.State.Get(ctx, &state)
@@ -488,7 +412,7 @@ func (r *poolResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 	tflog.Info(ctx, "Performing Read on pool resource")
 
 	// // use common model for state
-	var newState poolResourceModel
+	var newState basicPoolResourceModel
 	// use common Read function
 	newState.Read(ctx, *r.client, &resp.Diagnostics, "resource", state.ID.ValueString())
 	if diags.HasError() {
@@ -508,10 +432,10 @@ func (r *poolResource) Read(ctx context.Context, req resource.ReadRequest, resp 
 
 }
 
-func (r *poolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+func (r *basicPoolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 
 	// retrieve values from plan
-	var plan poolResourceModel
+	var plan basicPoolResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -519,7 +443,7 @@ func (r *poolResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	}
 
 	// retrieve values from state
-	var state poolResourceModel
+	var state basicPoolResourceModel
 	diags = req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -541,10 +465,10 @@ func (r *poolResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 }
 
-func (r *poolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+func (r *basicPoolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 
 	// Retrieve values from state
-	var state poolResourceModel
+	var state basicPoolResourceModel
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -563,7 +487,7 @@ func (r *poolResource) Delete(ctx context.Context, req resource.DeleteRequest, r
 
 }
 
-func (r *poolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+func (r *basicPoolResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	// retrieve import ID and save to id attribute
 	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
 }

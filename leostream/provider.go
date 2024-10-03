@@ -197,7 +197,8 @@ func (p *leostreamProvider) DataSources(_ context.Context) []func() datasource.D
 func (p *leostreamProvider) Resources(_ context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewGatewayResource,
-		NewPoolResource,
+		NewAwsPoolResource,
+		NewBasicPoolResource,
 		NewCenterResource,
 	}
 }
