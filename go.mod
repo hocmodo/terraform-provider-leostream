@@ -5,7 +5,7 @@ go 1.21.1
 require (
 	github.com/hashicorp/terraform-plugin-framework v1.9.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
-	gitlab.hocmodo.nl/community/leostream-client-go v0.0.8
+	gitlab.hocmodo.nl/community/leostream-client-go v0.0.9
 )
 
 require (
