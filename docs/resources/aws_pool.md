@@ -182,3 +182,15 @@ Optional:
 - `name` (String) Name of the center.
 - `provision_method` (String) The method of provisioning. Currently only 'image' is supported.
 - `type` (String) Type of the center. Currently only AWS is supported: amazon
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# Copyright (c) HashiCorp, Inc.
+
+# Order can be imported by specifying the numeric identifier.
+
+terraform import leostream_aws_pool 123
+```

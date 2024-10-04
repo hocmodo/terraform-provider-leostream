@@ -141,3 +141,15 @@ Optional:
 - `provision_vm_id` (Number) The ID of the server which will do the provisioning, or 0 if URL notification only
 - `provision_vm_name` (String) The name of the VM to be provisioned.
 - `provision_vm_name_next_value` (Number) The next value for sequential VM names
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# Copyright (c) HashiCorp, Inc.
+
+# Order can be imported by specifying the numeric identifier.
+
+terraform import leostream_basic_pool 123
+```

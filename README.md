@@ -30,3 +30,44 @@ Run the following command to initialize the workspace and apply the sample confi
 ```shell
 $ terraform init && terraform plan/apply -var-file="secret.tfvars"
 ```
+
+## More enhanced way for importing resources
+
+Use https://gitlab.hocmodo.nl/community/leostream-admin-cli to pull the data from the Leostream API and get the id's
+
+## AWS Pools
+
+```shell
+for pool_id in `leostream-admin-cli pool list --json | jq '.[].id'`
+do
+  terraform import leostream_aws_pool $pool_id
+done
+```
+
+## Basic pools
+
+```shell
+for pool_id in `leostream-admin-cli pool list --json | jq '.[].id'`
+do
+    terraform import leostream_basic_pool $pool_id
+done
+```
+
+
+## Centers
+
+```shell
+for center_id in `leostream-admin-cli center list --json | jq '.[].id'`
+do
+  terraform import leostream_center $center_id
+done
+```
+
+## Gateways
+
+```shell
+for gateway_id in `leostream-admin-cli gateway list --json | jq '.[].id'`
+do
+  terraform import leostream_gateway $gateway_id
+done
+```

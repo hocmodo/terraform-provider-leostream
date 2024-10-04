@@ -66,3 +66,15 @@ Optional:
 - `vc_password` (String, Sensitive) The Secret Access Key for the user.
 - `wait_inst_status` (Number) Wait for instance status to be running before assigning desktops.
 - `wait_sys_status` (Number) Wait for system status to be valid before assigning desktops.
+
+## Import
+
+Import is supported using the following syntax:
+
+```shell
+# Copyright (c) HashiCorp, Inc.
+
+# Order can be imported by specifying the numeric identifier.
+
+terraform import leostream_center 123
+```
