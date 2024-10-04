@@ -41,11 +41,11 @@ func (d *gatewaysDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 					Attributes: map[string]schema.Attribute{
 						"id": schema.Int64Attribute{
 							Description: "Unique identifier for the gateway.",
-							Computed: true,
+							Computed:    true,
 						},
 						"name": schema.StringAttribute{
 							Description: "Display name of the gateway.",
-							Computed: true,
+							Computed:    true,
 						},
 					},
 				},

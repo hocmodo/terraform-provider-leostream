@@ -55,36 +55,36 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Unique identifier for the pool.",
-				Optional: true,
-				Computed: true,
+				Optional:    true,
+				Computed:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
 				Description: "Name of the pool.",
-				Optional: true,
+				Optional:    true,
 			},
 			"display_name": schema.StringAttribute{
 				Description: "Display name of the pool.",
-				Optional: true,
+				Optional:    true,
 			},
 			"notes": schema.StringAttribute{
 				Description: "Notes for the pool.",
-				Optional: true,
-				Computed: true,
-				Default:  stringdefault.StaticString(""),
+				Optional:    true,
+				Computed:    true,
+				Default:     stringdefault.StaticString(""),
 			},
 			"running_desktops_threshold": schema.Int64Attribute{
 				Description: "Running and available desktops in the pool.",
-				Optional: true,
-				Computed: true,
-				Default:  int64default.StaticInt64(0),
+				Optional:    true,
+				Computed:    true,
+				Default:     int64default.StaticInt64(0),
 			},
 			"pool_definition": schema.SingleNestedAttribute{
 				Description: "Pool definition",
-				Optional: true,
-				Computed: true,
+				Optional:    true,
+				Computed:    true,
 				Default: objectdefault.StaticValue(types.ObjectValueMust(
 					awsPoolDefinitionModel{}.attrTypes(), awsPoolDefinitionModel{}.defaultObject()),
 				),
@@ -114,21 +114,21 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 					},
 					"never_rogue": schema.Int64Attribute{
 						Description: "0 or 1: A boolean field indicating if desktops in this pool treat any user as the assigned user",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"use_vmotion": schema.Int64Attribute{
 						Description: "0 or 1: A boolean field indicating whether VMs of this pool will vMotion to new host",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"parent_pool_id": schema.Int64Attribute{
 						Description: "ID of the parent pool",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(1),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(1),
 					},
 					"pool_attribute_join": schema.StringAttribute{
 						Description: `A or O: How do the pool attributes get joined:
@@ -212,9 +212,9 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								},
 								"vm_gpu_field": schema.StringAttribute{
 									Description: "The GPU field to search; must be a column in the vm_gpu table. Cannot exist if vm_table_field or ad_attribute_field is populated.",
-									Optional: true,
-									Computed: true,
-									Default:  stringdefault.StaticString(""),
+									Optional:    true,
+									Computed:    true,
+									Default:     stringdefault.StaticString(""),
 									PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.StringRequest, resp *stringplanmodifier.RequiresReplaceIfFuncResponse) {
 										// If the plan has a value for the nested object, we need to replace
 
@@ -224,8 +224,8 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								},
 								"text_to_match": schema.StringAttribute{
 									Description: "The free form text attribute",
-									Optional: true,
-									Computed: false,
+									Optional:    true,
+									Computed:    false,
 									//Default:  stringdefault.StaticString(""),
 									PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.StringRequest, resp *stringplanmodifier.RequiresReplaceIfFuncResponse) {
 										// If the plan has a value for the nested object, we need to replace
@@ -281,61 +281,61 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 					},
 					"provision_max": schema.Int64Attribute{
 						Description: "The maximum number of new machines that will be provisioned when the threshold is reached.",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"provision_vm_id": schema.Int64Attribute{
 						Description: "The ID of the server which will do the provisioning, or 0 if URL notification only",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"provision_server_id": schema.Int64Attribute{
 						Description: "The ID of the server which will do the provisioning, or 0 if URL notification only",
-						Optional: true,
+						Optional:    true,
 					},
 					"provision_threshold": schema.Int64Attribute{
 						Description: "Minimum number of available VMs before triggering provisioning.",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"provision_tenant_id": schema.Int64Attribute{
 						Description: "The tenant to provision into",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"provision_limits_enforce": schema.Int64Attribute{
 						Description: "0 or 1: A boolean field indicating if Broker creates and deletes virtual machines to meet the start and max threshold.",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"mark_deletable": schema.Int64Attribute{
 						Description: "0 or 1: Specifies whether to initialize newly-provisioned desktops as 'deletable'.",
-						Optional: true,
-						Computed: true,
-						Default:  int64default.StaticInt64(0),
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
 					},
 					"provision_url": schema.StringAttribute{
 						Description: "The URL to notify when a new machine is provisioned.",
-						Optional: true,
-						Computed: true,
-						Default:  stringdefault.StaticString(""),
+						Optional:    true,
+						Computed:    true,
+						Default:     stringdefault.StaticString(""),
 					},
 					"provision_vm_display_name": schema.StringAttribute{
 						Description: "The display name of the VM to be provisioned.",
-						Optional: true,
-						Computed: true,
-						Default:  stringdefault.StaticString(""),
+						Optional:    true,
+						Computed:    true,
+						Default:     stringdefault.StaticString(""),
 					},
 					"provision_vm_name": schema.StringAttribute{
 						Description: "The name of the VM to be provisioned.",
-						Optional: true,
-						Computed: true,
-						Default:  stringdefault.StaticString(""),
+						Optional:    true,
+						Computed:    true,
+						Default:     stringdefault.StaticString(""),
 					},
 					"center": schema.SingleNestedAttribute{
 						Description: `Container for parameters related to Center. Offically:
@@ -358,19 +358,19 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						Attributes: map[string]schema.Attribute{
 							"id": schema.Int64Attribute{
 								Description: "Unique identifier for the center.",
-								Optional: true,
+								Optional:    true,
 							},
 							"name": schema.StringAttribute{
 								Description: "Name of the center.",
-								Optional: true,
-								Computed: false,
+								Optional:    true,
+								Computed:    false,
 								//Default:  stringdefault.StaticString(""),
 							},
 							"type": schema.StringAttribute{
 								Description: "Type of the center. Currently only AWS is supported: amazon",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
 							},
 							"aws_size": schema.StringAttribute{
 								Description: `The size of the instance to provision.
@@ -381,33 +381,33 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 							},
 							"provision_method": schema.StringAttribute{
 								Description: "The method of provisioning. Currently only 'image' is supported.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString("image"),
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString("image"),
 							},
 							"aws_iam_name": schema.StringAttribute{
 								Description: "The name of the IAM role to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
 							},
 							"aws_sub_net": schema.StringAttribute{
 								Description: "The subnet ID to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
 							},
 							"aws_sec_group": schema.StringAttribute{
 								Description: "The security group name to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
 							},
 							"aws_vpc_id": schema.StringAttribute{
 								Description: "The VPC ID to use for the instance.",
-								Optional: true,
-								Computed: true,
-								Default:  stringdefault.StaticString(""),
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
 							},
 						},
 					},
@@ -416,7 +416,6 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 		},
 	}
 }
-
 
 // Configure adds the provider configured client to the resource.
 func (r *awsPoolResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {

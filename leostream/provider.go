@@ -40,16 +40,16 @@ func (p *leostreamProvider) Schema(_ context.Context, _ provider.SchemaRequest, 
 		Attributes: map[string]schema.Attribute{
 			"host": schema.StringAttribute{
 				Description: "URI for Leostream REST API.",
-				Optional: true,
+				Optional:    true,
 			},
 			"username": schema.StringAttribute{
 				Description: "Username for Leostream REST API.",
-				Optional: true,
+				Optional:    true,
 			},
 			"password": schema.StringAttribute{
 				Description: "Password for Leostream REST API.",
-				Optional:  true,
-				Sensitive: true,
+				Optional:    true,
+				Sensitive:   true,
 			},
 		},
 	}

@@ -41,39 +41,39 @@ func (d *centersDataSource) Schema(_ context.Context, _ datasource.SchemaRequest
 					Attributes: map[string]schema.Attribute{
 						"id": schema.Int64Attribute{
 							Description: "Unique identifier for the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"name": schema.StringAttribute{
 							Description: "Name of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"os": schema.StringAttribute{
 							Description: "Operating system of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"flavor": schema.StringAttribute{
 							Description: "Flavor of the center. Currently only AWS is supported.",
-							Computed: true,
+							Computed:    true,
 						},
 						"online": schema.Int64Attribute{
 							Description: "Online status of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"status": schema.Int64Attribute{
 							Description: "Status of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"status_label": schema.StringAttribute{
 							Description: "Status label of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"center_type": schema.StringAttribute{
 							Description: "Type of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 						"type_label": schema.StringAttribute{
 							Description: "Type label of the center.",
-							Computed: true,
+							Computed:    true,
 						},
 					},
 				},

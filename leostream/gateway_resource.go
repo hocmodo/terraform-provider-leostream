@@ -57,28 +57,28 @@ func (r *gatewayResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Unique identifier for the gateway.",
-				Computed: true,
+				Computed:    true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"name": schema.StringAttribute{
 				Description: "Display name of the gateway.",
-				Optional: true,
+				Optional:    true,
 			},
 			"address": schema.StringAttribute{
 				Description: "Public IP address of the gateway.",
-				Optional: true,
+				Optional:    true,
 			},
 			"address_private": schema.StringAttribute{
 				Description: "Private IP address of the gateway.",
-				Optional: true,
+				Optional:    true,
 			},
 			"load_balancer_id": schema.Int64Attribute{
 				Description: "ID of the cluster associated with the gateway.",
-				Optional: true,
-				Computed: true,
-				Default:  int64default.StaticInt64(0),
+				Optional:    true,
+				Computed:    true,
+				Default:     int64default.StaticInt64(0),
 			},
 			"use_src_ip": schema.Int64Attribute{
 				Description: `Method of source IP filtering
@@ -92,9 +92,9 @@ func (r *gatewayResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 			},
 			"notes": schema.StringAttribute{
 				Description: "Notes for the gateway.",
-				Optional: true,
-				Computed: true,
-				Default:  stringdefault.StaticString(""),
+				Optional:    true,
+				Computed:    true,
+				Default:     stringdefault.StaticString(""),
 			},
 		},
 	}

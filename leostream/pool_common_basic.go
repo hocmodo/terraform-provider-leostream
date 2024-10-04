@@ -145,7 +145,6 @@ func (o basicProvisionModel) defaultObject() map[string]attr.Value {
 	}
 }
 
-
 // attributesModel maps pool definition attribute schema data
 type basicAttributesModel struct {
 	Vm_table_field     types.String `tfsdk:"vm_table_field"`

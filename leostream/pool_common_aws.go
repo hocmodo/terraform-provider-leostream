@@ -95,54 +95,54 @@ func (o awsPoolDefinitionModel) defaultObject() map[string]attr.Value {
 
 // poolProvisionModel maps filtering schema data
 type awsProvisionModel struct {
-	Provision_on_off             types.Int64  `tfsdk:"provision_on_off"`
-	Provision_max                types.Int64  `tfsdk:"provision_max"`
-	Provision_vm_id              types.Int64  `tfsdk:"provision_vm_id"`
-	Provision_server_id          types.Int64  `tfsdk:"provision_server_id"`
-	Provision_vm_name            types.String `tfsdk:"provision_vm_name"`
-	Provision_threshold          types.Int64  `tfsdk:"provision_threshold"`
-	Provision_tenant_id          types.Int64  `tfsdk:"provision_tenant_id"`
+	Provision_on_off    types.Int64  `tfsdk:"provision_on_off"`
+	Provision_max       types.Int64  `tfsdk:"provision_max"`
+	Provision_vm_id     types.Int64  `tfsdk:"provision_vm_id"`
+	Provision_server_id types.Int64  `tfsdk:"provision_server_id"`
+	Provision_vm_name   types.String `tfsdk:"provision_vm_name"`
+	Provision_threshold types.Int64  `tfsdk:"provision_threshold"`
+	Provision_tenant_id types.Int64  `tfsdk:"provision_tenant_id"`
 	//Provision_vm_name_next_value types.Int64  `tfsdk:"provision_vm_name_next_value"`
-	Provision_vm_display_name    types.String `tfsdk:"provision_vm_display_name"`
-	Provision_url                types.String `tfsdk:"provision_url"`
-	Provision_limits_enforce     types.Int64  `tfsdk:"provision_limits_enforce"`
-	Mark_deletable               types.Int64  `tfsdk:"mark_deletable"`
-	Center                       types.Object `tfsdk:"center"`
+	Provision_vm_display_name types.String `tfsdk:"provision_vm_display_name"`
+	Provision_url             types.String `tfsdk:"provision_url"`
+	Provision_limits_enforce  types.Int64  `tfsdk:"provision_limits_enforce"`
+	Mark_deletable            types.Int64  `tfsdk:"mark_deletable"`
+	Center                    types.Object `tfsdk:"center"`
 }
 
 // attrTypes - return attribute types for this model
 func (o awsProvisionModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"provision_on_off":             types.Int64Type,
-		"provision_max":                types.Int64Type,
-		"provision_vm_id":              types.Int64Type,
-		"provision_server_id":          types.Int64Type,
-		"provision_vm_name":            types.StringType,
-		"provision_threshold":          types.Int64Type,
-		"provision_tenant_id":          types.Int64Type,
-		"provision_vm_display_name":    types.StringType,
-		"provision_url":                types.StringType,
-		"provision_limits_enforce":     types.Int64Type,
-		"mark_deletable":               types.Int64Type,
-		"center":                       types.ObjectType{AttrTypes: awsCenterModel{}.attrTypes()},
+		"provision_on_off":          types.Int64Type,
+		"provision_max":             types.Int64Type,
+		"provision_vm_id":           types.Int64Type,
+		"provision_server_id":       types.Int64Type,
+		"provision_vm_name":         types.StringType,
+		"provision_threshold":       types.Int64Type,
+		"provision_tenant_id":       types.Int64Type,
+		"provision_vm_display_name": types.StringType,
+		"provision_url":             types.StringType,
+		"provision_limits_enforce":  types.Int64Type,
+		"mark_deletable":            types.Int64Type,
+		"center":                    types.ObjectType{AttrTypes: awsCenterModel{}.attrTypes()},
 	}
 }
 
 // defaultObject - return default object for this model representing the provision object
 func (o awsProvisionModel) defaultObject() map[string]attr.Value {
 	return map[string]attr.Value{
-		"provision_on_off":             types.Int64Value(CONFIG_POOL_PROVISION_ON_OFF),
-		"provision_max":                types.Int64Value(CONFIG_POOL_PROVISION_MAX),
-		"provision_vm_id":              types.Int64Value(CONFIG_POOL_PROVISION_VM_ID),
-		"provision_server_id":          types.Int64Value(CONFIG_POOL_PROVISION_SERVER_ID),
-		"provision_vm_name":            types.StringValue(""),
-		"provision_threshold":          types.Int64Value(CONFIG_POOL_PROVISION_THRESHOLD),
-		"provision_tenant_id":          types.Int64Value(CONFIG_POOL_PROVISION_TENANT_ID),
-		"provision_vm_display_name":    types.StringValue(""),
-		"provision_url":                types.StringValue(""),
-		"provision_limits_enforce":     types.Int64Value(CONFIG_POOL_PROVISION_LIMITS_ENFORCE),
-		"mark_deletable":               types.Int64Value(CONFIG_POOL_MARK_DELETABLE),
-		"center":                       types.ObjectValueMust(awsCenterModel{}.attrTypes(), awsCenterModel{}.defaultObject()),
+		"provision_on_off":          types.Int64Value(CONFIG_POOL_PROVISION_ON_OFF),
+		"provision_max":             types.Int64Value(CONFIG_POOL_PROVISION_MAX),
+		"provision_vm_id":           types.Int64Value(CONFIG_POOL_PROVISION_VM_ID),
+		"provision_server_id":       types.Int64Value(CONFIG_POOL_PROVISION_SERVER_ID),
+		"provision_vm_name":         types.StringValue(""),
+		"provision_threshold":       types.Int64Value(CONFIG_POOL_PROVISION_THRESHOLD),
+		"provision_tenant_id":       types.Int64Value(CONFIG_POOL_PROVISION_TENANT_ID),
+		"provision_vm_display_name": types.StringValue(""),
+		"provision_url":             types.StringValue(""),
+		"provision_limits_enforce":  types.Int64Value(CONFIG_POOL_PROVISION_LIMITS_ENFORCE),
+		"mark_deletable":            types.Int64Value(CONFIG_POOL_MARK_DELETABLE),
+		"center":                    types.ObjectValueMust(awsCenterModel{}.attrTypes(), awsCenterModel{}.defaultObject()),
 	}
 }
 
@@ -287,20 +287,20 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 
 	// if poolConfig.Provision.Center is not null, then unpack the center attributes
 	if poolConfig.Provision.Center != nil {
-	// Handle center attribute
-	var stateCenter awsCenterModel
-	stateCenter.ID = types.Int64Value(poolConfig.Provision.Center.ID)
-	stateCenter.Name = types.StringValue(poolConfig.Provision.Center.Name)
-	stateCenter.Type = types.StringValue(poolConfig.Provision.Center.Type)
-	stateCenter.Provision_method = types.StringValue(poolConfig.Provision.Center.Provision_method)
-	stateCenter.Aws_size = types.StringValue(poolConfig.Provision.Center.Aws_size)
-	stateCenter.Aws_iam_name = types.StringValue(poolConfig.Provision.Center.Aws_iam_name)
-	stateCenter.Aws_sub_net = types.StringValue(poolConfig.Provision.Center.Aws_sub_net)
-	stateCenter.Aws_sec_group = types.StringValue(poolConfig.Provision.Center.Aws_sec_group)
-	stateCenter.Aws_vpc_id = types.StringValue(poolConfig.Provision.Center.Aws_vpc_id)
+		// Handle center attribute
+		var stateCenter awsCenterModel
+		stateCenter.ID = types.Int64Value(poolConfig.Provision.Center.ID)
+		stateCenter.Name = types.StringValue(poolConfig.Provision.Center.Name)
+		stateCenter.Type = types.StringValue(poolConfig.Provision.Center.Type)
+		stateCenter.Provision_method = types.StringValue(poolConfig.Provision.Center.Provision_method)
+		stateCenter.Aws_size = types.StringValue(poolConfig.Provision.Center.Aws_size)
+		stateCenter.Aws_iam_name = types.StringValue(poolConfig.Provision.Center.Aws_iam_name)
+		stateCenter.Aws_sub_net = types.StringValue(poolConfig.Provision.Center.Aws_sub_net)
+		stateCenter.Aws_sec_group = types.StringValue(poolConfig.Provision.Center.Aws_sec_group)
+		stateCenter.Aws_vpc_id = types.StringValue(poolConfig.Provision.Center.Aws_vpc_id)
 
-	// Add center to provision model
-	stateProvision.Center, _ = types.ObjectValueFrom(ctx, awsCenterModel{}.attrTypes(), &stateCenter)
+		// Add center to provision model
+		stateProvision.Center, _ = types.ObjectValueFrom(ctx, awsCenterModel{}.attrTypes(), &stateCenter)
 
 	}
 
