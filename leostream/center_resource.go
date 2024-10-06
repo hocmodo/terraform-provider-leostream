@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"strconv"
 
-	//"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -46,6 +45,7 @@ func (r *centerResource) Metadata(_ context.Context, req resource.MetadataReques
 // Schema defines the schema for the resource.
 func (r *centerResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `The center resource allows you to create, read, update, and delete centers in Leostream.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Unique identifier for the center.",
@@ -66,7 +66,6 @@ func (r *centerResource) Schema(_ context.Context, _ resource.SchemaRequest, res
 						Description: "Name of the center.",
 						Required:    true,
 						Computed:    false,
-						//Default:  stringdefault.StaticString(""),
 					},
 					"allow_rogue": schema.Int64Attribute{
 						Description: "Assign rogue users to desktops from this center.",
@@ -246,9 +245,6 @@ func (r *centerResource) Read(ctx context.Context, req resource.ReadRequest, res
 		resp.Diagnostics.Append(diags...)
 		return
 	}
-
-	// populate internal fields into new state
-	//newState.ID = state.ID
 
 	//set refreshed state
 	diags = resp.State.Set(ctx, &newState)

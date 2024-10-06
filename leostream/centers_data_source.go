@@ -34,6 +34,7 @@ func (d *centersDataSource) Metadata(_ context.Context, req datasource.MetadataR
 // Schema defines the schema for the data source.
 func (d *centersDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `The centers data source allows you to retrieve a list of centers from Leostream.`,
 		Attributes: map[string]schema.Attribute{
 			"centers": schema.ListNestedAttribute{
 				Computed: true,

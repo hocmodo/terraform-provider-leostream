@@ -4,16 +4,13 @@ package leostream
 
 import (
 	"context"
-	"strconv"
-	//"reflect"
-	//"regexp"
-	//"strings"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
+	"strconv"
 )
 
 // poolResourceModel maps the resource schema data.
@@ -26,32 +23,6 @@ type awsPoolResourceModel struct {
 	Pool_definition            types.Object `tfsdk:"pool_definition"`
 	Provision                  types.Object `tfsdk:"provision"`
 }
-
-// // attrTypes - return attribute types for this model
-// func (o poolResourceModel) attrTypes() map[string]attr.Type {
-// 	return map[string]attr.Type{
-// 		"id":                         types.StringType,
-// 		"name":                       types.StringType,
-// 		"display_name":               types.StringType,
-// 		"notes":                      types.StringType,
-// 		"running_desktops_threshold": types.Int64Type,
-// 		"pool_definition":            types.ObjectType{AttrTypes: poolDefinitionModel{}.attrTypes()},
-// 	}
-// }
-
-// defaultObject - return default object for this model
-// func (o poolResourceModel) defaultObject() map[string]attr.Value {
-// 	return map[string]attr.Value{
-// 		"id":                         types.StringValue(""),
-// 		"name":                       types.StringValue(""),
-// 		"display_name":               types.StringValue(""),
-// 		"notes":                      types.StringValue(""),
-// 		"running_desktops_threshold": types.Int64Value(0),
-// 		"pool_definition":            types.ObjectValueMust(poolDefinitionModel{}.attrTypes(), poolDefinitionModel{}.defaultObject()),
-// 	}
-// }
-
-// nested attributes objects
 
 // poolDefinitionModel maps filtering schema data
 type awsPoolDefinitionModel struct {
@@ -95,14 +66,13 @@ func (o awsPoolDefinitionModel) defaultObject() map[string]attr.Value {
 
 // poolProvisionModel maps filtering schema data
 type awsProvisionModel struct {
-	Provision_on_off    types.Int64  `tfsdk:"provision_on_off"`
-	Provision_max       types.Int64  `tfsdk:"provision_max"`
-	Provision_vm_id     types.Int64  `tfsdk:"provision_vm_id"`
-	Provision_server_id types.Int64  `tfsdk:"provision_server_id"`
-	Provision_vm_name   types.String `tfsdk:"provision_vm_name"`
-	Provision_threshold types.Int64  `tfsdk:"provision_threshold"`
-	Provision_tenant_id types.Int64  `tfsdk:"provision_tenant_id"`
-	//Provision_vm_name_next_value types.Int64  `tfsdk:"provision_vm_name_next_value"`
+	Provision_on_off          types.Int64  `tfsdk:"provision_on_off"`
+	Provision_max             types.Int64  `tfsdk:"provision_max"`
+	Provision_vm_id           types.Int64  `tfsdk:"provision_vm_id"`
+	Provision_server_id       types.Int64  `tfsdk:"provision_server_id"`
+	Provision_vm_name         types.String `tfsdk:"provision_vm_name"`
+	Provision_threshold       types.Int64  `tfsdk:"provision_threshold"`
+	Provision_tenant_id       types.Int64  `tfsdk:"provision_tenant_id"`
 	Provision_vm_display_name types.String `tfsdk:"provision_vm_display_name"`
 	Provision_url             types.String `tfsdk:"provision_url"`
 	Provision_limits_enforce  types.Int64  `tfsdk:"provision_limits_enforce"`
@@ -209,17 +179,6 @@ func (o awsAttributesModel) attrTypes() map[string]attr.Type {
 	}
 }
 
-// // defaultObject - return default object for this model
-// func (o attributesModel) defaultObject() map[string]attr.Value {
-// 	return map[string]attr.Value{
-// 		"vm_table_field":     types.StringValue(""),
-// 		"ad_attribute_field": types.StringValue(""),
-// 		"vm_gpu_field":       types.StringValue(""),
-// 		"text_to_match":      types.StringValue(""),
-// 		"condition_type":     types.StringValue(""),
-// 	}
-// }
-
 // common `Read` function for both data source and resource
 func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
 	//Pool CONFIG
@@ -279,7 +238,6 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 	stateProvision.Provision_vm_name = types.StringValue(poolConfig.Provision.Provision_vm_name)
 	stateProvision.Provision_threshold = types.Int64Value(poolConfig.Provision.Provision_threshold)
 	stateProvision.Provision_tenant_id = types.Int64Value(poolConfig.Provision.Provision_tenant_id)
-	//stateProvision.Provision_vm_name_next_value = types.Int64Value(poolConfig.Provision.Provision_vm_name_next_value)
 	stateProvision.Provision_vm_display_name = types.StringValue(poolConfig.Provision.Provision_vm_display_name)
 	stateProvision.Provision_url = types.StringValue(poolConfig.Provision.Provision_url)
 	stateProvision.Provision_limits_enforce = types.Int64Value(poolConfig.Provision.Provision_limits_enforce)
@@ -339,8 +297,6 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	poolDefinitionConfig.Pool_attribute_join = planPoolDefinition.Pool_attribute_join.ValueString()
 
 	// Populate pool_definition Server_ids field in empty object from plan (but only if it is not empty)
-	// todo: what is the default value for server_ids? 0?
-	//if len(planPoolDefinition.Server_ids.Elements()) > 0 {
 	for _, server_id := range planPoolDefinition.Server_ids.Elements() {
 		// Convert the server_id to an int64 using an intermediary variable
 		server_id_int64, _ := strconv.ParseInt(server_id.String(), 10, 32)
@@ -351,7 +307,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	if diags.HasError() {
 		return nil
 	}
-	//}
+
 	// Populate pool_definition Never_rogue field in empty object from plan
 	poolDefinitionConfig.Never_rogue = planPoolDefinition.Never_rogue.ValueInt64()
 
@@ -414,7 +370,6 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	provisionConfig.Provision_vm_name = planProvision.Provision_vm_name.ValueString()
 	provisionConfig.Provision_threshold = planProvision.Provision_threshold.ValueInt64()
 	provisionConfig.Provision_tenant_id = planProvision.Provision_tenant_id.ValueInt64()
-	//_value = planProvision.Provision_vm_name_next_value.ValueInt64()
 	provisionConfig.Provision_vm_display_name = planProvision.Provision_vm_display_name.ValueString()
 	provisionConfig.Provision_url = planProvision.Provision_url.ValueString()
 	provisionConfig.Provision_limits_enforce = planProvision.Provision_limits_enforce.ValueInt64()
@@ -549,7 +504,6 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	provisionConfig.Provision_vm_name = planProvision.Provision_vm_name.ValueString()
 	provisionConfig.Provision_threshold = planProvision.Provision_threshold.ValueInt64()
 	provisionConfig.Provision_tenant_id = planProvision.Provision_tenant_id.ValueInt64()
-	//provisionConfig.Provision_vm_name_next_value = planProvision.Provision_vm_name_next_value.ValueInt64()
 	provisionConfig.Provision_vm_display_name = planProvision.Provision_vm_display_name.ValueString()
 	provisionConfig.Provision_url = planProvision.Provision_url.ValueString()
 	provisionConfig.Provision_limits_enforce = planProvision.Provision_limits_enforce.ValueInt64()

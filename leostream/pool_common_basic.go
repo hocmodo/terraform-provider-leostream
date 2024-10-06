@@ -4,16 +4,13 @@ package leostream
 
 import (
 	"context"
-	"strconv"
-	//"reflect"
-	//"regexp"
-	//"strings"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
+	"strconv"
 )
 
 // poolResourceModel maps the resource schema data.
@@ -26,32 +23,6 @@ type basicPoolResourceModel struct {
 	Pool_definition            types.Object `tfsdk:"pool_definition"`
 	Provision                  types.Object `tfsdk:"provision"`
 }
-
-// // attrTypes - return attribute types for this model
-// func (o poolResourceModel) attrTypes() map[string]attr.Type {
-// 	return map[string]attr.Type{
-// 		"id":                         types.StringType,
-// 		"name":                       types.StringType,
-// 		"display_name":               types.StringType,
-// 		"notes":                      types.StringType,
-// 		"running_desktops_threshold": types.Int64Type,
-// 		"pool_definition":            types.ObjectType{AttrTypes: poolDefinitionModel{}.attrTypes()},
-// 	}
-// }
-
-// defaultObject - return default object for this model
-// func (o poolResourceModel) defaultObject() map[string]attr.Value {
-// 	return map[string]attr.Value{
-// 		"id":                         types.StringValue(""),
-// 		"name":                       types.StringValue(""),
-// 		"display_name":               types.StringValue(""),
-// 		"notes":                      types.StringValue(""),
-// 		"running_desktops_threshold": types.Int64Value(0),
-// 		"pool_definition":            types.ObjectValueMust(poolDefinitionModel{}.attrTypes(), poolDefinitionModel{}.defaultObject()),
-// 	}
-// }
-
-// nested attributes objects
 
 // poolDefinitionModel maps filtering schema data
 type basicPoolDefinitionModel struct {
@@ -165,17 +136,6 @@ func (o basicAttributesModel) attrTypes() map[string]attr.Type {
 	}
 }
 
-// // defaultObject - return default object for this model
-// func (o attributesModel) defaultObject() map[string]attr.Value {
-// 	return map[string]attr.Value{
-// 		"vm_table_field":     types.StringValue(""),
-// 		"ad_attribute_field": types.StringValue(""),
-// 		"vm_gpu_field":       types.StringValue(""),
-// 		"text_to_match":      types.StringValue(""),
-// 		"condition_type":     types.StringValue(""),
-// 	}
-// }
-
 // common `Read` function for both data source and resource
 func (o *basicPoolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
 	//Pool CONFIG
@@ -276,19 +236,18 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 	poolDefinitionConfig.Pool_attribute_join = planPoolDefinition.Pool_attribute_join.ValueString()
 
 	// Populate pool_definition Server_ids field in empty object from plan (but only if it is not empty)
-	// todo: what is the default value for server_ids? 0?
-	//if len(planPoolDefinition.Server_ids.Elements()) > 0 {
 	for _, server_id := range planPoolDefinition.Server_ids.Elements() {
 		// Convert the server_id to an int64 using an intermediary variable
 		server_id_int64, _ := strconv.ParseInt(server_id.String(), 10, 32)
 		// Append the server_id_int64 to the poolDefinitionConfig.Server_ids
 		poolDefinitionConfig.Server_ids = append(poolDefinitionConfig.Server_ids, server_id_int64)
 	}
+
 	*diags = planPoolDefinition.Server_ids.ElementsAs(ctx, &poolDefinitionConfig.Server_ids, false)
 	if diags.HasError() {
 		return nil
 	}
-	//}
+
 	// Populate pool_definition Never_rogue field in empty object from plan
 	poolDefinitionConfig.Never_rogue = planPoolDefinition.Never_rogue.ValueInt64()
 

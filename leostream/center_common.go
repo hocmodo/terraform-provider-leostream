@@ -19,24 +19,6 @@ type centerResourceModel struct {
 	Center_definition types.Object `tfsdk:"center_definition"`
 }
 
-// attrTypes - return attribute types for this model
-// func (o centerResourceModel) attrTypes() map[string]attr.Type {
-// 	return map[string]attr.Type{
-// 		"id":                types.StringType,
-// 		"center_definition": types.ObjectType{AttrTypes: centerDefinitionModel{}.attrTypes()},
-// 	}
-// }
-
-// defaultObject - return default object for this model
-// func (o centerResourceModel) defaultObject() map[string]attr.Value {
-// 	return map[string]attr.Value{
-// 		"id":                types.StringValue(""),
-// 		"center_definition": types.ObjectValueMust(centerDefinitionModel{}.attrTypes(), centerDefinitionModel{}.defaultObject()),
-// 	}
-// }
-
-// nested attributes objects
-
 // centerDefinitionModel maps filtering schema data
 type centerDefinitionModel struct {
 	Name                  types.String `tfsdk:"name"`
@@ -229,7 +211,6 @@ func (r *centerResource) UpdateNested(ctx context.Context, plan *centerResourceM
 	centerDefinitionConfig.Vc_auth_method = plancenterDefinition.Vc_auth_method.ValueString()
 	centerDefinitionConfig.Vc_datacenter = plancenterDefinition.Vc_datacenter.ValueString()
 	centerDefinitionConfig.Vc_name = plancenterDefinition.Vc_name.ValueString()
-	//centerDefinitionConfig.Vc_password = plancenterDefinition.Vc_password.ValueString()
 	centerDefinitionConfig.Wait_inst_status = plancenterDefinition.Wait_inst_status.ValueInt64()
 	centerDefinitionConfig.Wait_sys_status = plancenterDefinition.Wait_sys_status.ValueInt64()
 

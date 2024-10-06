@@ -35,6 +35,7 @@ func (d *centerDataSource) Metadata(_ context.Context, req datasource.MetadataRe
 // Schema defines the schema for the data source.
 func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `The center data source allows you to retrieve a center with all of it's attributes from Leostream.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				Required: true,
@@ -173,30 +174,6 @@ func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 						Optional:    true,
 						Computed:    true,
 					},
-					// "aws_sec_groups": schema.SetNestedAttribute{
-					// 	Optional: true,
-					// 	Computed: true,
-					// 	NestedObject: schema.NestedAttributeObject{
-					// 		Attributes: map[string]schema.Attribute{
-					// 			"gid": schema.StringAttribute{
-					// 				Optional: true,
-					// 				Computed: true,
-					// 			},
-					// 			"gname": schema.StringAttribute{
-					// 				Optional: true,
-					// 				Computed: true,
-					// 			},
-					// 			"gdesc": schema.StringAttribute{
-					// 				Optional: true,
-					// 				Computed: true,
-					// 			},
-					// 			"vpcid": schema.StringAttribute{
-					// 				Optional: true,
-					// 				Computed: true,
-					// 			},
-					// 		},
-					// 	},
-					// },
 				},
 			},
 		},
@@ -242,15 +219,12 @@ func (d *centerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	stateCenterDefinitionDataSourceModel.Vc_password = types.StringValue(center.Center_definition.Vc_password)
 	stateCenterDefinitionDataSourceModel.Wait_inst_status = types.Int64Value(center.Center_definition.Wait_inst_status)
 	stateCenterDefinitionDataSourceModel.Wait_sys_status = types.Int64Value(center.Center_definition.Wait_sys_status)
-	//stateCenterDefinitionDataSourceModel.aws_sizes, *diags = types.ListValueFrom(ctx, types.StringType, center.Center_definition.Aws_sizes)
 
 	// Map response body to model
 	state.Center_definition, _ = types.ObjectValueFrom(ctx, centerDefinitionDataSourceModel{}.attrTypes(), &stateCenterDefinitionDataSourceModel)
 
 	// Create a new center_info state model
 	var stateCenterInfoDataSourceModel centerInfoDataSourceModel
-
-	//stateCenterInfoDataSourceModel.aws_sec_groups, *diags = types.SetValueFrom(ctx, awsSecGroupsModel{}.attrTypes(), center.Center_info.Aws_sec_groups)
 	stateCenterInfoDataSourceModel.Aws_sizes, _ = types.ListValueFrom(ctx, types.StringType, center.Center_info.Aws_sizes)
 	stateCenterInfoDataSourceModel.Aws_sub_nets, _ = types.ListValueFrom(ctx, types.StringType, center.Center_info.Aws_sub_nets)
 	stateCenterInfoDataSourceModel.Os = types.StringValue(center.Center_info.Os)
@@ -344,7 +318,6 @@ type centerInfoDataSourceModel struct {
 // attrTypes - return attribute types for this model
 func (o centerInfoDataSourceModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		//		"aws_sec_groups": types.SetType{ElemType: types.ObjectType{AttrTypes: awsSecGroupsModel{}.attrTypes()}},
 		"aws_sizes":    types.ListType{ElemType: types.StringType},
 		"aws_sub_nets": types.ListType{ElemType: types.StringType},
 		"os":           types.StringType,
@@ -372,13 +345,3 @@ type centerDSModel struct {
 	Center_info       types.Object `tfsdk:"center_info"`
 	Images            types.List   `tfsdk:"images"`
 }
-
-// attrTypes - return attribute types for this model
-// func (o centerDSModel) attrTypes() map[string]attr.Type {
-// 	return map[string]attr.Type{
-// 		"id":                types.Int64Type,
-// 		"center_definition": types.ObjectType{AttrTypes: centerDefinitionDataSourceModel{}.attrTypes()},
-// 		"center_info":       types.ObjectType{AttrTypes: centerInfoDataSourceModel{}.attrTypes()},
-// 		"images":            types.ListType{ElemType: types.ObjectType{AttrTypes: imagesModel{}.attrTypes()}},
-// 	}
-// }

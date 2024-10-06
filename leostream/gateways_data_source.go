@@ -34,6 +34,7 @@ func (d *gatewaysDataSource) Metadata(_ context.Context, req datasource.Metadata
 // Schema defines the schema for the data source.
 func (d *gatewaysDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `The gateways data source allows you to retrieve a list of gateways from Leostream.`,
 		Attributes: map[string]schema.Attribute{
 			"gateways": schema.ListNestedAttribute{
 				Computed: true,

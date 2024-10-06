@@ -11,12 +11,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault" // Add this line
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectdefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
-	//"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -52,6 +51,7 @@ func (r *basicPoolResource) Metadata(_ context.Context, req resource.MetadataReq
 // Schema defines the schema for the resource.
 func (r *basicPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
+		Description: `The basic pool resource allows you to manage Leostream pools. Basic pools are used to group desktops together for management and provisioning.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Unique identifier for the pool.",
@@ -136,7 +136,6 @@ func (r *basicPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
 						Optional:    true,
 						Computed:    true,
-						//Default:     setdefault.StaticValue(types.SetNull(types.ObjectType{AttrTypes: attributesModel{}.attrTypes()})),
 						PlanModifiers: []planmodifier.List{
 							listplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.ListRequest, resp *listplanmodifier.RequiresReplaceIfFuncResponse) {
 								// If the plan has a value for the nested object, we need to replace
@@ -219,7 +218,6 @@ func (r *basicPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 									Description: "The free form text attribute",
 									Optional:    true,
 									Computed:    false,
-									//Default:  stringdefault.StaticString(""),
 									PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.StringRequest, resp *stringplanmodifier.RequiresReplaceIfFuncResponse) {
 										// If the plan has a value for the nested object, we need to replace
 
@@ -241,7 +239,6 @@ func (r *basicPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 									ew - "ends with".`,
 									Optional: true,
 									Computed: false,
-									//Default:  stringdefault.StaticString(""),
 									PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.StringRequest, resp *stringplanmodifier.RequiresReplaceIfFuncResponse) {
 										// If the plan has a value for the nested object, we need to replace
 
