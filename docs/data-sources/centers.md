@@ -3,12 +3,12 @@
 page_title: "leostream_centers Data Source - leostream"
 subcategory: ""
 description: |-
-  
+  The centers data source allows you to retrieve a list of centers from Leostream.
 ---
 
 # leostream_centers (Data Source)
 
-
+The centers data source allows you to retrieve a list of centers from Leostream.
 
 ## Example Usage
 

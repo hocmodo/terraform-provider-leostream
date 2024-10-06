@@ -3,12 +3,12 @@
 page_title: "leostream Provider"
 subcategory: ""
 description: |-
-  Interact with Leostream REST API
+  The Leostream provider allows you to interact with the Leostream REST API to manage Leostream resources. The username created must have API access.
 ---
 
 # leostream Provider
 
-Interact with Leostream REST API
+The Leostream provider allows you to interact with the Leostream REST API to manage Leostream resources. The username created must have API access.
 
 ## Example Usage
 

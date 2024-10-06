@@ -3,12 +3,12 @@
 page_title: "leostream_gateways Data Source - leostream"
 subcategory: ""
 description: |-
-  
+  The gateways data source allows you to retrieve a list of gateways from Leostream.
 ---
 
 # leostream_gateways (Data Source)
 
-
+The gateways data source allows you to retrieve a list of gateways from Leostream.
 
 
 

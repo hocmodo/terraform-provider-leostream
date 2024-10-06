@@ -3,12 +3,12 @@
 page_title: "leostream_center Resource - leostream"
 subcategory: ""
 description: |-
-  
+  The center resource allows you to create, read, update, and delete centers in Leostream.
 ---
 
 # leostream_center (Resource)
 
-
+The center resource allows you to create, read, update, and delete centers in Leostream.
 
 ## Example Usage
 

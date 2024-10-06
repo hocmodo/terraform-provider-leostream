@@ -3,12 +3,12 @@
 page_title: "leostream_gateway Resource - leostream"
 subcategory: ""
 description: |-
-  
+  The gateway resource allows you to create, read, update, and delete gateways in Leostream.
 ---
 
 # leostream_gateway (Resource)
 
-
+The gateway resource allows you to create, read, update, and delete gateways in Leostream.
 
 ## Example Usage
 

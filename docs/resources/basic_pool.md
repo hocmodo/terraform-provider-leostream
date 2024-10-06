@@ -3,12 +3,12 @@
 page_title: "leostream_basic_pool Resource - leostream"
 subcategory: ""
 description: |-
-  
+  The basic pool resource allows you to manage Leostream pools. Basic pools are used to group desktops together for management and provisioning.
 ---
 
 # leostream_basic_pool (Resource)
 
-
+The basic pool resource allows you to manage Leostream pools. Basic pools are used to group desktops together for management and provisioning.
 
 ## Example Usage
 

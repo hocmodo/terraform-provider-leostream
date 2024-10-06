@@ -48,7 +48,7 @@ func (r *awsPoolResource) Metadata(_ context.Context, req resource.MetadataReque
 // Schema defines the schema for the resource.
 func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `The AWS pool resource allows you to manage Leostream pools. AWS Pools are used to group desktops in AWS together for management and provisioning.`,
+		Description: `The AWS pool resource allows you to manage Leostream AWS pools. These pools are used to group desktops in AWS together for management and provisioning.`,
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Description: "Unique identifier for the pool.",

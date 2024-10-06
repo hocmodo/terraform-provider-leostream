@@ -36,8 +36,7 @@ func (p *leostreamProvider) Metadata(_ context.Context, _ provider.MetadataReque
 // Schema defines the provider-level schema for configuration data.
 func (p *leostreamProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: `Interact with Leostream REST API
-		The Leostream provider allows you to interact with the Leostream REST API to manage Leostream resources. The username created must have API access.`,
+		Description: `The Leostream provider allows you to interact with the Leostream REST API to manage Leostream resources. The username created must have API access.`,
 		Attributes: map[string]schema.Attribute{
 			"host": schema.StringAttribute{
 				Description: "URI for Leostream REST API.",

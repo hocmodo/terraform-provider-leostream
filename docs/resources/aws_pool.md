@@ -3,12 +3,12 @@
 page_title: "leostream_aws_pool Resource - leostream"
 subcategory: ""
 description: |-
-  
+  The AWS pool resource allows you to manage Leostream AWS pools. These pools are used to group desktops in AWS together for management and provisioning.
 ---
 
 # leostream_aws_pool (Resource)
 
-
+The AWS pool resource allows you to manage Leostream AWS pools. These pools are used to group desktops in AWS together for management and provisioning.
 
 ## Example Usage
 

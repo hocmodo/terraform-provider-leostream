@@ -3,12 +3,12 @@
 page_title: "leostream_center_ds Data Source - leostream"
 subcategory: ""
 description: |-
-  
+  The center data source allows you to retrieve a center with all of it's attributes from Leostream.
 ---
 
 # leostream_center_ds (Data Source)
 
-
+The center data source allows you to retrieve a center with all of it's attributes from Leostream.
 
 
 
