@@ -1,0 +1,233 @@
+// Copyright (c) HashiCorp, Inc.
+
+package leostream
+
+import (
+	"context"
+	"strconv"
+
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"gitlab.hocmodo.nl/community/leostream-client-go"
+)
+
+// poolAssignmentResourceModel maps the resource schema data.
+type poolAssignmentResourceModel struct {
+	ID                	  		types.String `tfsdk:"id"`
+	Pool_id				  		types.Int64  `tfsdk:"pool_id"`
+	Policy_id			 	 	types.Int64  `tfsdk:"policy_id"`
+	Offer_filter          		types.String `tfsdk:"offer_filter"`
+	Offer_filter_json 	  		types.Object `tfsdk:"offer_filter_json"`
+	Plan_protocol_id	  	  	types.Int64  `tfsdk:"plan_protocol_id"`
+	Plan_power_control_id		types.Int64  `tfsdk:"plan_power_control_id"`
+	Plan_release_id				types.Int64  `tfsdk:"plan_release_id"`
+	Offer_quantity				types.Int64  `tfsdk:"offer_quantity"`
+	Display_mode          		types.String `tfsdk:"display_mode"`
+	Start_if_stopped			types.Int64  `tfsdk:"start_of_stopped"`
+}
+
+// offerFilterModel maps filtering schema data
+type offerFilterModel struct {
+	Name                  types.String `tfsdk:"name"`
+	Filters          	  types.List   `tfsdk:"attributes"`
+}
+
+// filterModel maps filtering schema data
+type filterModel struct {
+	offer_filter_attribute     	types.String `tfsdk:"offer_filter_attribute"`
+	offer_filter_condition 		types.String `tfsdk:"offer_filter_condition"`
+	offer_filter_value       	types.String `tfsdk:"offer_filter_value"`
+}
+
+// attrTypes - return attribute types for this model
+func (o offerFilterModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"name":                  types.StringType,
+		"allow_rogue":           types.Int64Type,
+		"allow_rogue_policy_id": types.Int64Type,
+		"continuous_autotag":    types.Int64Type,
+		"init_unavailable":      types.Int64Type,
+		"new_as_deletable":      types.Int64Type,
+		"notes":                 types.StringType,
+		"offer_vms":             types.Int64Type,
+		"poll_interval":         types.Int64Type,
+		"proxy_address":         types.StringType,
+		"type":                  types.StringType,
+		"vc_auth_method":        types.StringType,
+		"vc_datacenter":         types.StringType,
+		"vc_name":               types.StringType,
+		"vc_password":           types.StringType,
+		"wait_inst_status":      types.Int64Type,
+		"wait_sys_status":       types.Int64Type,
+	}
+}
+
+// defaultObject - return default object for this model
+func (o offerFilterModel) defaultObject() map[string]attr.Value {
+	return map[string]attr.Value{
+		"name":                  types.StringValue(""),
+		"allow_rogue":           types.Int64Value(0),
+		"allow_rogue_policy_id": types.Int64Value(0),
+		"continuous_autotag":    types.Int64Value(0),
+		"init_unavailable":      types.Int64Value(0),
+		"new_as_deletable":      types.Int64Value(0),
+		"notes":                 types.StringValue(""),
+		"offer_vms":             types.Int64Value(1),
+		"poll_interval":         types.Int64Value(1),
+		"proxy_address":         types.StringValue(""),
+		"type":                  types.StringValue("amazon"),
+		"vc_auth_method":        types.StringValue(""),
+		"vc_datacenter":         types.StringValue(""),
+		"vc_name":               types.StringValue(""),
+		"vc_password":           types.StringValue("**********"),
+		"wait_inst_status":      types.Int64Value(0),
+		"wait_sys_status":       types.Int64Value(0),
+	}
+}
+
+// common `Read` function for both data source and resource
+func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
+	//center CONFIG
+	//get refreshed center config value from Leostream API
+	centerConfig, err := client.GetCenter(id)
+
+	if err != nil {
+		diags.AddError(
+			"Unable to read center Configuration",
+			err.Error(),
+		)
+		return
+	}
+
+	o.ID = types.StringValue(strconv.FormatInt(centerConfig.ID, 10))
+
+	// Map center definition to state
+	var statecenterDefinition offerFilterModel
+	statecenterDefinition.Name = types.StringValue(centerConfig.Center_definition.Name)
+	statecenterDefinition.Allow_rogue = types.Int64Value(centerConfig.Center_definition.Allow_rogue)
+	statecenterDefinition.Allow_rogue_policy_id = types.Int64Value(centerConfig.Center_definition.Allow_rogue_policy_id)
+	statecenterDefinition.Continuous_autotag = types.Int64Value(centerConfig.Center_definition.Continuous_autotag)
+	statecenterDefinition.Init_unavailable = types.Int64Value(centerConfig.Center_definition.Init_unavailable)
+	statecenterDefinition.New_as_deletable = types.Int64Value(centerConfig.Center_definition.New_as_deletable)
+	statecenterDefinition.Notes = types.StringValue(centerConfig.Center_definition.Notes)
+	statecenterDefinition.Offer_vms = types.Int64Value(centerConfig.Center_definition.Offer_vms)
+	statecenterDefinition.Poll_interval = types.Int64Value(centerConfig.Center_definition.Poll_interval)
+	statecenterDefinition.Proxy_address = types.StringValue(centerConfig.Center_definition.Proxy_address)
+	statecenterDefinition.Type = types.StringValue(centerConfig.Center_definition.Type)
+	statecenterDefinition.Vc_auth_method = types.StringValue(centerConfig.Center_definition.Vc_auth_method)
+	statecenterDefinition.Vc_datacenter = types.StringValue(centerConfig.Center_definition.Vc_datacenter)
+	statecenterDefinition.Vc_name = types.StringValue(centerConfig.Center_definition.Vc_name)
+	statecenterDefinition.Vc_password = types.StringValue(centerConfig.Center_definition.Vc_password)
+	statecenterDefinition.Wait_inst_status = types.Int64Value(centerConfig.Center_definition.Wait_inst_status)
+	statecenterDefinition.Wait_sys_status = types.Int64Value(centerConfig.Center_definition.Wait_sys_status)
+
+	//Add center definition to center model
+	o.Center_definition, _ = types.ObjectValueFrom(ctx, offerFilterModel{}.attrTypes(), &statecenterDefinition)
+
+}
+
+// `Create` function for the resource
+func (r *centerResource) CreateNested(ctx context.Context, plan *poolAssignmentResourceModel, state *poolAssignmentResourceModel, diags *diag.Diagnostics) *leostream.CenterStored {
+	// center CONFIG
+
+	// Instantiate empty object for storing plan data
+	var centerConfig leostream.Center
+
+	// Unpack nested attributes from plan for the center definition
+	var plancenterDefinition offerFilterModel
+	*diags = plan.Center_definition.As(ctx, &plancenterDefinition, basetypes.ObjectAsOptions{})
+	if diags.HasError() {
+		return nil
+	}
+
+	// Instantiate empty object for storing plan data for the center definition object in the center config
+	var centerDefinitionConfig leostream.CenterDefinition
+
+	// Populate center_definition field restrict_by in empty object from plan
+	centerDefinitionConfig.Name = plancenterDefinition.Name.ValueString()
+	centerDefinitionConfig.Allow_rogue = plancenterDefinition.Allow_rogue.ValueInt64()
+	centerDefinitionConfig.Allow_rogue_policy_id = plancenterDefinition.Allow_rogue_policy_id.ValueInt64()
+	centerDefinitionConfig.Continuous_autotag = plancenterDefinition.Continuous_autotag.ValueInt64()
+	centerDefinitionConfig.Init_unavailable = plancenterDefinition.Init_unavailable.ValueInt64()
+	centerDefinitionConfig.New_as_deletable = plancenterDefinition.New_as_deletable.ValueInt64()
+	centerDefinitionConfig.Notes = plancenterDefinition.Notes.ValueString()
+	centerDefinitionConfig.Offer_vms = plancenterDefinition.Offer_vms.ValueInt64()
+	centerDefinitionConfig.Poll_interval = plancenterDefinition.Poll_interval.ValueInt64()
+	centerDefinitionConfig.Proxy_address = plancenterDefinition.Proxy_address.ValueString()
+	centerDefinitionConfig.Type = plancenterDefinition.Type.ValueString()
+	centerDefinitionConfig.Vc_auth_method = plancenterDefinition.Vc_auth_method.ValueString()
+	centerDefinitionConfig.Vc_datacenter = plancenterDefinition.Vc_datacenter.ValueString()
+	centerDefinitionConfig.Vc_name = plancenterDefinition.Vc_name.ValueString()
+	centerDefinitionConfig.Vc_password = plancenterDefinition.Vc_password.ValueString()
+	centerDefinitionConfig.Wait_inst_status = plancenterDefinition.Wait_inst_status.ValueInt64()
+	centerDefinitionConfig.Wait_sys_status = plancenterDefinition.Wait_sys_status.ValueInt64()
+
+	// Assign the center definition config to the center config
+	centerConfig.Center_definition = centerDefinitionConfig
+
+	// Create new center
+	centersStored, err := r.client.CreateCenter(centerConfig, nil)
+
+	if err != nil {
+		diags.AddError(
+			"Unable to Create center",
+			err.Error(),
+		)
+		return nil
+	} else {
+		return centersStored
+	}
+}
+
+// `Update` function for the resource
+func (r *centerResource) UpdateNested(ctx context.Context, plan *poolAssignmentResourceModel, state *poolAssignmentResourceModel, diags *diag.Diagnostics) *leostream.CenterStored {
+	// center CONFIG
+
+	// Instantiate empty object for storing plan data
+	var centerConfig leostream.Center
+
+	// Unpack nested attributes from plan for the center definition
+	var plancenterDefinition offerFilterModel
+	*diags = plan.Center_definition.As(ctx, &plancenterDefinition, basetypes.ObjectAsOptions{})
+	if diags.HasError() {
+		return nil
+	}
+	// Instantiate empty object for storing plan data for the center definition object in the center config
+	var centerDefinitionConfig leostream.CenterDefinition
+
+	// Populate center definition config from plan
+	centerDefinitionConfig.Name = plancenterDefinition.Name.ValueString()
+	centerDefinitionConfig.Allow_rogue = plancenterDefinition.Allow_rogue.ValueInt64()
+	centerDefinitionConfig.Allow_rogue_policy_id = plancenterDefinition.Allow_rogue_policy_id.ValueInt64()
+	centerDefinitionConfig.Continuous_autotag = plancenterDefinition.Continuous_autotag.ValueInt64()
+	centerDefinitionConfig.Init_unavailable = plancenterDefinition.Init_unavailable.ValueInt64()
+	centerDefinitionConfig.New_as_deletable = plancenterDefinition.New_as_deletable.ValueInt64()
+	centerDefinitionConfig.Notes = plancenterDefinition.Notes.ValueString()
+	centerDefinitionConfig.Offer_vms = plancenterDefinition.Offer_vms.ValueInt64()
+	centerDefinitionConfig.Poll_interval = plancenterDefinition.Poll_interval.ValueInt64()
+	centerDefinitionConfig.Proxy_address = plancenterDefinition.Proxy_address.ValueString()
+	centerDefinitionConfig.Type = plancenterDefinition.Type.ValueString()
+	centerDefinitionConfig.Vc_auth_method = plancenterDefinition.Vc_auth_method.ValueString()
+	centerDefinitionConfig.Vc_datacenter = plancenterDefinition.Vc_datacenter.ValueString()
+	centerDefinitionConfig.Vc_name = plancenterDefinition.Vc_name.ValueString()
+	centerDefinitionConfig.Wait_inst_status = plancenterDefinition.Wait_inst_status.ValueInt64()
+	centerDefinitionConfig.Wait_sys_status = plancenterDefinition.Wait_sys_status.ValueInt64()
+
+	// Assign the center definition config to the center config
+	centerConfig.Center_definition = centerDefinitionConfig
+
+	// Update center
+	centersStored, err := r.client.UpdateCenter(plan.ID.ValueString(), centerConfig, nil)
+
+	if err != nil {
+		diags.AddError(
+			"Unable to modify center",
+			err.Error(),
+		)
+		return nil
+	} else {
+		return centersStored
+	}
+}
