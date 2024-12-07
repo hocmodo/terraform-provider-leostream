@@ -10,12 +10,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
@@ -64,22 +65,27 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Required:    true,
 			},
 			"offer_filter": schema.StringAttribute{
-				Description: "The method used to decide whether desktops from this pool will be included in the offer.",
+				Description: `The method used to decide whether desktops from this pool will be included in the offer.
+				0: Included for all users (default)
+				1: Only included if user's AD record matches the offer_filter_json criteria
+				2: Only included if current date and time is within the offer_filter_json time ranges`,
 				Optional:    true,
+				Computed: true,
+				Default:  stringdefault.StaticString("0"),
 			},
 			"offer_filter_json": schema.SingleNestedAttribute{
 				Description: "offer_filter_json",
 				Optional:    true,
 				Computed:    true,
 				Default: objectdefault.StaticValue(types.ObjectValueMust(
-					awsPoolDefinitionModel{}.attrTypes(), awsPoolDefinitionModel{}.defaultObject()),
+					offerFilterJsonModel{}.attrTypes(), offerFilterJsonModel{}.defaultObject()),
 				),
 				Attributes: map[string]schema.Attribute{
 					"join": schema.StringAttribute{
-						Description: "Join string",
+						Description: "And/Or join condition - A or O",
 						Optional: true,
 						Computed: true,
-						Default:  stringdefault.StaticString("C"),
+						Default:  stringdefault.StaticString("O"),
 					},
 					"filters": schema.ListNestedAttribute{
 						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
@@ -139,7 +145,7 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 										resp.RequiresReplace = true
 
 									}, "", "")},
-								},	
+								},
 							},
 						},
 					},
@@ -148,18 +154,26 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 			"plan_protocol_id": schema.Int64Attribute{
 				Description: "ID of protocol plan to assign",
 				Optional:    true,
+				Computed: 	 true,
+				Default:     int64default.StaticInt64(0),
 			},
 			"plan_power_control_id": schema.Int64Attribute{
 				Description: "ID of power plan to assign",
 				Optional:    true,
+				Computed: 	 true,
+				Default:     int64default.StaticInt64(0),
 			},
 			"plan_release_id": schema.Int64Attribute{
 				Description: "ID of release plan to assign",
 				Optional:    true,
+				Computed: 	 true,
+				Default:     int64default.StaticInt64(0),
 			},
 			"offer_quantity": schema.Int64Attribute{
 				Description: "The number of VMs to offer to a user at login",
 				Optional:    true,
+				Computed: 	 true,
+				Default:     int64default.StaticInt64(1),
 			},
 			"display_mode": schema.StringAttribute{
 				Description: `How to describe the offered machines:
@@ -175,10 +189,14 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				9 = Pool display name : Desktop display name
 				10= Pool display name : Machine name`,
 				Optional:    true,
+				Computed:    true,
+				Default:     stringdefault.StaticString("0"),
 			},
 			"start_if_stopped": schema.Int64Attribute{
 				Description: "A boolean field indicating whether to attempt to power on a machine if it's currently stopped/suspended.",
 				Optional:    true,
+				Computed: 	 true,
+				Default:     int64default.StaticInt64(0),
 			},
 		},
 	}
@@ -218,7 +236,7 @@ func (r *poolAssignmentResource) Create(ctx context.Context, req resource.Create
 	// empty state as it's a create operation
 	var state poolAssignmentResourceModel
 
-	CrStored := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics)
+	CrStored := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics, "2")
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -254,7 +272,7 @@ func (r *poolAssignmentResource) Read(ctx context.Context, req resource.ReadRequ
 	// // use common model for state
 	var newState poolAssignmentResourceModel
 	// use common Read function
-	newState.Read(ctx, *r.client, &resp.Diagnostics, "resource", state.ID.ValueString())
+	newState.Read(ctx, *r.client, &resp.Diagnostics, "resource", state.Policy_id.String(), state.ID.ValueString())
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -287,7 +305,7 @@ func (r *poolAssignmentResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	_ = r.UpdateNested(ctx, &plan, &state, &resp.Diagnostics)
+	_ = r.UpdateNested(ctx, &plan, &state, &resp.Diagnostics, "2")
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -313,11 +331,11 @@ func (r *poolAssignmentResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete existing center
-	err := r.client.DeleteCenter(state.ID.ValueString(), nil)
+	err := r.client.DeletePoolAssignment(state.ID.ValueString(),"2", nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting Leostream center",
-			"Could not delete center, unexpected error: "+err.Error(),
+			"Error Deleting Leostream poolassignment",
+			"Could not delete poolassignment, unexpected error: "+err.Error(),
 		)
 		return
 	}

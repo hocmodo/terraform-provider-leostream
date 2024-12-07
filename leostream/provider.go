@@ -200,6 +200,7 @@ func (p *leostreamProvider) Resources(_ context.Context) []func() resource.Resou
 		NewAwsPoolResource,
 		NewBasicPoolResource,
 		NewCenterResource,
+		NewpoolAssignmentResource,
 	}
 }
 
