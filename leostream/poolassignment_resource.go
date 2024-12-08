@@ -155,19 +155,19 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Description: "ID of protocol plan to assign",
 				Optional:    true,
 				Computed: 	 true,
-				Default:     int64default.StaticInt64(0),
+				Default:     int64default.StaticInt64(1),
 			},
 			"plan_power_control_id": schema.Int64Attribute{
 				Description: "ID of power plan to assign",
 				Optional:    true,
 				Computed: 	 true,
-				Default:     int64default.StaticInt64(0),
+				Default:     int64default.StaticInt64(1),
 			},
 			"plan_release_id": schema.Int64Attribute{
 				Description: "ID of release plan to assign",
 				Optional:    true,
 				Computed: 	 true,
-				Default:     int64default.StaticInt64(0),
+				Default:     int64default.StaticInt64(1),
 			},
 			"offer_quantity": schema.Int64Attribute{
 				Description: "The number of VMs to offer to a user at login",
@@ -196,7 +196,7 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Description: "A boolean field indicating whether to attempt to power on a machine if it's currently stopped/suspended.",
 				Optional:    true,
 				Computed: 	 true,
-				Default:     int64default.StaticInt64(0),
+				Default:     int64default.StaticInt64(1),
 			},
 		},
 	}
