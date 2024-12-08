@@ -82,7 +82,18 @@ func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream
 
 	o.ID = types.StringValue(strconv.FormatInt(poolassignmentConfig.ID, 10))
 
-	// Map center definition to state
+	// Map poolassignment fields to state
+	o.Display_mode = types.StringValue(poolassignmentConfig.Display_mode)
+	o.Offer_filter = types.StringValue(poolassignmentConfig.Offer_filter)
+	o.Offer_quantity = types.Int64Value(poolassignmentConfig.Offer_quantity)
+	o.Plan_power_control_id = types.Int64Value(poolassignmentConfig.Plan_power_control_id)
+	o.Plan_protocol_id = types.Int64Value(poolassignmentConfig.Plan_protocol_id)
+	o.Plan_release_id = types.Int64Value(poolassignmentConfig.Plan_release_id)
+	o.Policy_id = types.Int64Value(poolassignmentConfig.Policy_id)
+	o.Pool_id = types.Int64Value(poolassignmentConfig.Pool_id)
+	o.Start_if_stopped = types.Int64Value(poolassignmentConfig.Start_if_stopped)
+
+	// Map offer filter json to state
 	var stateOfferFilter offerFilterJsonModel
 	stateOfferFilter.Join  = types.StringValue(poolassignmentConfig.Offer_filter_json.Join)
 
@@ -174,7 +185,7 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Offer_filter_json = &offerFilterJsonConfig
 
 	// Create new poolassignment
-	PoolAssignmentssStored, err := r.client.CreatePoolAssignment(poolassignmentConfig, policy_id,nil)
+	poolAssignmentsStored, err := r.client.CreatePoolAssignment(poolassignmentConfig, policy_id,nil)
 
 	if err != nil {
 		diags.AddError(
@@ -183,7 +194,7 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 		)
 		return nil
 	} else {
-		return PoolAssignmentssStored
+		return poolAssignmentsStored
 	}
 }
 
@@ -238,9 +249,9 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 	// Loop through the planAttributes and assign the values to the attributesConfig
 	for _, filter := range planFilters {
 		var filterConfig leostream.Filters
-		filterConfig.Offer_filter_attribute = filter.Offer_filter_attribute.String()
-		filterConfig.Offer_filter_condition = filter.Offer_filter_condition.String()
-		filterConfig.Offer_filter_value = filter.Offer_filter_attribute.ValueString()
+		filterConfig.Offer_filter_attribute = filter.Offer_filter_attribute.ValueString()
+		filterConfig.Offer_filter_condition = filter.Offer_filter_condition.ValueString()
+		filterConfig.Offer_filter_value = filter.Offer_filter_value.ValueString()
 
 		// Append the attributeConfig to the attributesConfig
 		filtersConfig = append(filtersConfig, filterConfig)
@@ -253,7 +264,7 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Offer_filter_json = &offerFilterJsonConfig
 
 	// Update pool
-	PoolAssignmentssStored, err := r.client.UpdatePoolAssignment(plan.ID.ValueString(), poolassignmentConfig, policy_id, nil)
+	PoolAssignmentsStored, err := r.client.UpdatePoolAssignment(plan.ID.ValueString(), poolassignmentConfig, policy_id, nil)
 
 	if err != nil {
 		diags.AddError(
@@ -262,7 +273,7 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 		)
 		return nil
 	} else {
-		return PoolAssignmentssStored
+		return PoolAssignmentsStored
 	}
 
 }
