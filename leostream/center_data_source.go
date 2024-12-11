@@ -4,6 +4,7 @@ package leostream
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -174,36 +175,41 @@ func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 						Optional:    true,
 						Computed:    true,
 					},
-					"aws_sec_groups": schema.SingleNestedAttribute{
-						Optional: true,
-						Computed: true,
-						Attributes: map[string]schema.Attribute{
-							"gdesc": schema.StringAttribute{
-								Description: "Description of AWS Security Group",
-								Optional:    true,
-								Computed:    true,
-							},
-							"gid": schema.StringAttribute{
-								Description: "ID of AWS Security Group",
-								Optional:    true,
-								Computed:    true,
-							},
-							"gname": schema.StringAttribute{
-								Description: "Name of AWS Security Group",
-								Optional:    true,
-								Computed:    true,
-							},
-							"vpcid": schema.StringAttribute{
-								Description: "ID of AWS VPC",
-								Optional:    true,
-								Computed:    true,
+					"aws_sec_groups": schema.ListNestedAttribute{
+						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
+						Optional:    true,
+						Computed:    true,					
+							NestedObject: schema.NestedAttributeObject{
+								Attributes: map[string]schema.Attribute{
+									"gdesc": schema.StringAttribute{
+										Description: `gdesc`,
+										Optional: true,
+										Computed: true,
+									},
+									"gid": schema.StringAttribute{
+										Description: `Desktop attribute, mandatory for LDAP attributes,
+										see possible values for an AD Center in centers.get response, field ldap_attributes.
+										annot exist if vm_table_field or vm_gpu_field is populated.`,
+										Optional: true,
+										Computed: true,
+									},
+									"gname": schema.StringAttribute{
+										Description: "The GPU field to search; must be a column in the vm_gpu table. Cannot exist if vm_table_field or ad_attribute_field is populated.",
+										Optional:    true,
+										Computed:    true,
+									},
+									"vpcid": schema.StringAttribute{
+										Description: "The free form text attribute",
+										Optional:    true,
+										Computed:    false,
+									},
 								},
 							},
 						},
 					},
 				},
-		},
-	}
+			},
+		}
 }
 
 // Read refreshes the Terraform state with the latest data.
@@ -259,10 +265,10 @@ func (d *centerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	var stateCenterInfoSgDataSourceModel []centerInfoSgDataSourceModel
 	for _, security_group := range center.Center_info.Aws_sec_groups {
 		var stateSecurityGroup centerInfoSgDataSourceModel
-		stateSecurityGroup.GDesc = types.StringValue(security_group.GDesc)
-		stateSecurityGroup.GId = types.StringValue(security_group.GId)
-		stateSecurityGroup.GName = types.StringValue(security_group.GName)
-		stateSecurityGroup.VpcId = types.StringValue(security_group.VpcId)
+		stateSecurityGroup.Gdesc = types.StringValue(security_group.Gdesc)
+		stateSecurityGroup.Gid = types.StringValue(security_group.Gid)
+		stateSecurityGroup.Gname = types.StringValue(security_group.Gname)
+		stateSecurityGroup.Vpcid = types.StringValue(security_group.Vpcid)
 		stateCenterInfoSgDataSourceModel = append(stateCenterInfoSgDataSourceModel, stateSecurityGroup)
 	}
 
@@ -367,19 +373,19 @@ func (o centerInfoDataSourceModel) attrTypes() map[string]attr.Type {
 
 // centersDataSourceModel maps the data source schema data.
 type centerInfoSgDataSourceModel struct {
-	GDesc    		types.String   	`tfsdk:"gdesk"`
-	GId 			types.String   	`tfsdk:"gid"`
-	GName           types.String 	`tfsdk:"gname"`
-	VpcId   		types.String 	`tfsdk:"vpcid"`
+	Gdesc    		types.String   	`tfsdk:"gdesc"`
+	Gid 			types.String   	`tfsdk:"gid"`
+	Gname           types.String 	`tfsdk:"gname"`
+	Vpcid   		types.String 	`tfsdk:"vpcid"`
 }
 
 // attrTypes - return attribute types for this model
 func (o centerInfoSgDataSourceModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"gDesc":    		types.StringType,
-		"gId": 				types.StringType,
-		"gName":           	types.StringType,
-		"vpcd":   			types.StringType,
+		"gdesc":    		types.StringType,
+		"gid": 				types.StringType,
+		"gname":           	types.StringType,
+		"vpcid":   			types.StringType,
 	}
 }
 
