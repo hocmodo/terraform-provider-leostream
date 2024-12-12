@@ -4,6 +4,7 @@ package leostream
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
@@ -174,6 +175,35 @@ func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 						Optional:    true,
 						Computed:    true,
 					},
+					"aws_sec_groups": schema.ListNestedAttribute{
+						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
+						Optional:    true,
+						Computed:    true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"gdesc": schema.StringAttribute{
+									Description: "Group description",
+									Optional:    true,
+									Computed:    true,
+								},
+								"gid": schema.StringAttribute{
+									Description: "Group ID",
+									Optional:    true,
+									Computed:    true,
+								},
+								"gname": schema.StringAttribute{
+									Description: "Group name",
+									Optional:    true,
+									Computed:    true,
+								},
+								"vpcid": schema.StringAttribute{
+									Description: "VPC ID",
+									Optional:    true,
+									Computed:    false,
+								},
+							},
+						},
+					},
 				},
 			},
 		},
@@ -229,6 +259,18 @@ func (d *centerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	stateCenterInfoDataSourceModel.Aws_sub_nets, _ = types.ListValueFrom(ctx, types.StringType, center.Center_info.Aws_sub_nets)
 	stateCenterInfoDataSourceModel.Os = types.StringValue(center.Center_info.Os)
 	stateCenterInfoDataSourceModel.Os_version = types.StringValue(center.Center_info.Os_version)
+
+	var stateCenterInfoSgDataSourceModel []centerInfoSgDataSourceModel
+	for _, security_group := range center.Center_info.Aws_sec_groups {
+		var stateSecurityGroup centerInfoSgDataSourceModel
+		stateSecurityGroup.Gdesc = types.StringValue(security_group.Gdesc)
+		stateSecurityGroup.Gid = types.StringValue(security_group.Gid)
+		stateSecurityGroup.Gname = types.StringValue(security_group.Gname)
+		stateSecurityGroup.Vpcid = types.StringValue(security_group.Vpcid)
+		stateCenterInfoSgDataSourceModel = append(stateCenterInfoSgDataSourceModel, stateSecurityGroup)
+	}
+
+	stateCenterInfoDataSourceModel.Aws_sec_groups, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: centerInfoSgDataSourceModel{}.attrTypes()}, stateCenterInfoSgDataSourceModel)
 
 	// Map response body to model
 	state.Center_info, _ = types.ObjectValueFrom(ctx, centerInfoDataSourceModel{}.attrTypes(), &stateCenterInfoDataSourceModel)
@@ -309,19 +351,39 @@ func (o centerDefinitionDataSourceModel) attrTypes() map[string]attr.Type {
 // centersDataSourceModel maps the data source schema data.
 type centerInfoDataSourceModel struct {
 	//	Aws_sec_groups types.Set    `tfsdk:"aws_sec_groups"`
-	Aws_sizes    types.List   `tfsdk:"aws_sizes"`
-	Aws_sub_nets types.List   `tfsdk:"aws_sub_nets"`
-	Os           types.String `tfsdk:"os"`
-	Os_version   types.String `tfsdk:"os_version"`
+	Aws_sizes      types.List   `tfsdk:"aws_sizes"`
+	Aws_sub_nets   types.List   `tfsdk:"aws_sub_nets"`
+	Os             types.String `tfsdk:"os"`
+	Os_version     types.String `tfsdk:"os_version"`
+	Aws_sec_groups types.List   `tfsdk:"aws_sec_groups"`
 }
 
 // attrTypes - return attribute types for this model
 func (o centerInfoDataSourceModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"aws_sizes":    types.ListType{ElemType: types.StringType},
-		"aws_sub_nets": types.ListType{ElemType: types.StringType},
-		"os":           types.StringType,
-		"os_version":   types.StringType,
+		"aws_sizes":      types.ListType{ElemType: types.StringType},
+		"aws_sub_nets":   types.ListType{ElemType: types.StringType},
+		"os":             types.StringType,
+		"os_version":     types.StringType,
+		"aws_sec_groups": types.ListType{ElemType: types.ObjectType{AttrTypes: centerInfoSgDataSourceModel{}.attrTypes()}},
+	}
+}
+
+// centersDataSourceModel maps the data source schema data.
+type centerInfoSgDataSourceModel struct {
+	Gdesc types.String `tfsdk:"gdesc"`
+	Gid   types.String `tfsdk:"gid"`
+	Gname types.String `tfsdk:"gname"`
+	Vpcid types.String `tfsdk:"vpcid"`
+}
+
+// attrTypes - return attribute types for this model
+func (o centerInfoSgDataSourceModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"gdesc": types.StringType,
+		"gid":   types.StringType,
+		"gname": types.StringType,
+		"vpcid": types.StringType,
 	}
 }
 
