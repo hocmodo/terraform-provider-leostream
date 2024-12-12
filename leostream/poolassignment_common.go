@@ -97,21 +97,19 @@ func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream
 	var stateOfferFilter offerFilterJsonModel
 	stateOfferFilter.Join  = types.StringValue(poolassignmentConfig.Offer_filter_json.Join)
 
-	// Create a slice of attributesModel called statePoolDefinitionAttributes
+	// Create a slice of filterModel called stateOfferJsonFilters
 	var stateOfferJsonFilters []filterModel
-	// Loop through the poolConfig.Pool_definition.Attributes and assign the values to the stateAttributes
+	// Loop through the filters list and assign the values to filterModel
 	for _, filter := range poolassignmentConfig.Offer_filter_json.Filters {
 		var stateFilters filterModel
 		stateFilters.Offer_filter_attribute = types.StringValue(filter.Offer_filter_attribute)
 		stateFilters.Offer_filter_condition = types.StringValue(filter.Offer_filter_condition)
 		stateFilters.Offer_filter_value = types.StringValue(filter.Offer_filter_value)
-		// Append the stateAttributes to the statePoolDefinitionAttributes
+		// Append the stateFilters to the stateOfferJsonFilters
 		stateOfferJsonFilters = append(stateOfferJsonFilters, stateFilters)
 	}
 
-	// Assign the list to the statePoolDefinitionAttributes list value in the statePoolDefinition
-	// convert to a list
-	//stateOfferFilter.Filters, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: offerFilterJsonModel{}.attrTypes()}, stateOfferFilter)
+	// Assign the list to the Filters value in the stateOfferFilter
 	stateOfferFilter.Filters, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: filterModel{}.attrTypes()}, stateOfferJsonFilters)
 
 	//Add stateOfferFilter to poolassignment model
@@ -140,7 +138,6 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Display_mode = plan.Display_mode.ValueString()
 	poolassignmentConfig.Start_if_stopped = plan.Start_if_stopped.ValueInt64()
 
-
 	// Unpack nested attributes from plan for the pool offer_filter_json
 	var planOfferFilterJson offerFilterJsonModel
 
@@ -154,8 +151,6 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 	// Instantiate empty object for storing plan data for the attributes object in the pool definition object in the pool config
 	var planFilters []filterModel
 
-	// Populate pool_definition Attributes field in empty object from plan (but only if it exists)
-	// todo: what is the default value for Attributes? empty null object?
 	if !planOfferFilterJson.Filters.IsNull() {
 
 		*diags = planOfferFilterJson.Filters.ElementsAs(ctx, &planFilters, false)
@@ -164,17 +159,17 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 		}
 	}
 
-	//Object for storing plan data for the attributes list in the pooldefinition object of the pool config
+	//Object for storing plan data for the filters list in the filtersConfig object of the poolassignment config
 	var filtersConfig []leostream.Filters
 
-	// Loop through the planAttributes and assign the values to the attributesConfig
+	// Loop through the planFilters and assign the values to the filterConfig instance
 	for _, filter := range planFilters {
 		var filterConfig leostream.Filters
 		filterConfig.Offer_filter_attribute = filter.Offer_filter_attribute.ValueString()
 		filterConfig.Offer_filter_condition = filter.Offer_filter_condition.ValueString()
 		filterConfig.Offer_filter_value = filter.Offer_filter_value.ValueString()
 
-		// Append the attributeConfig to the attributesConfig
+		// Append the filterConfig instance to the list
 		filtersConfig = append(filtersConfig, filterConfig)
 
 	}
@@ -229,11 +224,10 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 
 	offerFilterJsonConfig.Join = planOfferFilterJson.Join.ValueString()
 
-	// Instantiate empty object for storing plan data for the attributes object in the pool definition object in the pool config
+	// Instantiate empty object for storing plan data for the filters list in the filterJson object in the poolassignment config
 	var planFilters []filterModel
 
-	// Populate pool_definition Attributes field in empty object from plan (but only if it exists)
-	// todo: what is the default value for Attributes? empty null object?
+	// Populate poolassignment_definition json filter field in empty object from plan (but only if it exists)
 	if !planOfferFilterJson.Filters.IsNull() {
 
 		*diags = planOfferFilterJson.Filters.ElementsAs(ctx, &planFilters, false)
@@ -242,9 +236,8 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 		}
 	}
 
-	//Object for storing plan data for the attributes list in the pooldefinition object of the pool config
+	//Object for storing plan data for the filter list in the Offer_filter_json object of the poolassignment
 	var filtersConfig []leostream.Filters
-
 
 	// Loop through the planAttributes and assign the values to the attributesConfig
 	for _, filter := range planFilters {
@@ -253,12 +246,12 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 		filterConfig.Offer_filter_condition = filter.Offer_filter_condition.ValueString()
 		filterConfig.Offer_filter_value = filter.Offer_filter_value.ValueString()
 
-		// Append the attributeConfig to the attributesConfig
+		// Append the filterConfig to the list
 		filtersConfig = append(filtersConfig, filterConfig)
 
 	}
 
-	// Assign the center definition config to the center config
+	// Assign the filters  config to the offerFilterJsonConfig
 	offerFilterJsonConfig.Filters = filtersConfig
 
 	poolassignmentConfig.Offer_filter_json = &offerFilterJsonConfig

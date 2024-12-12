@@ -182,24 +182,22 @@ func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 							NestedObject: schema.NestedAttributeObject{
 								Attributes: map[string]schema.Attribute{
 									"gdesc": schema.StringAttribute{
-										Description: `gdesc`,
+										Description: "Group description",
 										Optional: true,
 										Computed: true,
 									},
 									"gid": schema.StringAttribute{
-										Description: `Desktop attribute, mandatory for LDAP attributes,
-										see possible values for an AD Center in centers.get response, field ldap_attributes.
-										annot exist if vm_table_field or vm_gpu_field is populated.`,
+										Description: "Group ID",
 										Optional: true,
 										Computed: true,
 									},
 									"gname": schema.StringAttribute{
-										Description: "The GPU field to search; must be a column in the vm_gpu table. Cannot exist if vm_table_field or ad_attribute_field is populated.",
+										Description: "Group name",
 										Optional:    true,
 										Computed:    true,
 									},
 									"vpcid": schema.StringAttribute{
-										Description: "The free form text attribute",
+										Description: "VPC ID",
 										Optional:    true,
 										Computed:    false,
 									},
