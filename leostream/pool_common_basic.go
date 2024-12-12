@@ -4,13 +4,14 @@ package leostream
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
-	"strconv"
 )
 
 // poolResourceModel maps the resource schema data.
@@ -147,7 +148,6 @@ func (o *basicPoolResourceModel) Read(ctx context.Context, client leostream.Clie
 			"Unable to read Pool Configuration",
 			err.Error(),
 		)
-		return
 	}
 
 	// Map pool config to state
@@ -207,7 +207,7 @@ func (o *basicPoolResourceModel) Read(ctx context.Context, client leostream.Clie
 }
 
 // `Create` function for the resource
-func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolResourceModel, state *basicPoolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
+func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolResourceModel, state *basicPoolResourceModel, diags *diag.Diagnostics) (*leostream.PoolsStored, diag.Diagnostics) {
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -223,7 +223,7 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 	var planPoolDefinition basicPoolDefinitionModel
 	*diags = plan.Pool_definition.As(ctx, &planPoolDefinition, basetypes.ObjectAsOptions{})
 	if diags.HasError() {
-		return nil
+		return nil, *diags
 	}
 
 	// Instantiate empty object for storing plan data for the pool definition object in the pool config
@@ -245,7 +245,7 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 
 	*diags = planPoolDefinition.Server_ids.ElementsAs(ctx, &poolDefinitionConfig.Server_ids, false)
 	if diags.HasError() {
-		return nil
+		return nil, *diags
 	}
 
 	// Populate pool_definition Never_rogue field in empty object from plan
@@ -260,14 +260,26 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 	// Instantiate empty object for storing plan data for the attributes object in the pool definition object in the pool config
 	var planAttributes []basicAttributesModel
 
-	// Populate pool_definition Attributes field in empty object from plan (but only if it exists)
-	// todo: what is the default value for Attributes? empty null object?
-	if !planPoolDefinition.Attributes.IsNull() {
+	// Populate pool_definition Attributes field in empty object from plan (but only if the planPoolDefinition.Attributes list is bigger than 0)
+	if len(planPoolDefinition.Attributes.Elements()) > 0 {
 
+		poolDefinitionConfig.Attributes = nil
 		*diags = planPoolDefinition.Attributes.ElementsAs(ctx, &planAttributes, false)
 		if diags.HasError() {
-			return nil
+			return nil, *diags
 		}
+	} else {
+		// If the planAttributes is empty, then create an empty list of attributes
+		//planAttributes = basicAttributesModel{}.attrTypes(),[]basicAttributesModel{}.defaultObject
+		// Create a empty default basicAtrributesModel object
+		var b basicAttributesModel
+		b.Ad_attribute_field = types.StringValue("")
+		b.Condition_type = types.StringValue("")
+		b.Text_to_match = types.StringValue("")
+		b.Vm_gpu_field = types.StringValue("")
+		b.Vm_table_field = types.StringValue("")
+		// Append the empty default basicAtrributesModel object to the planAttributes
+		planAttributes = append(planAttributes, b)
 	}
 
 	//Object for storing plan data for the attributes list in the pooldefinition object of the pool config
@@ -297,7 +309,7 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 	var planProvision basicProvisionModel
 	*diags = plan.Provision.As(ctx, &planProvision, basetypes.ObjectAsOptions{})
 	if diags.HasError() {
-		return nil
+		return nil, *diags
 	}
 	// Object for storing plan data for the provision object in the pool config
 	var provisionConfig leostream.Provision
@@ -326,9 +338,9 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 			"Unable to Create Pool",
 			err.Error(),
 		)
-		return nil
+		return nil, *diags
 	} else {
-		return PoolsStored
+		return PoolsStored, *diags
 	}
 }
 

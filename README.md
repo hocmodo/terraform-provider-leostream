@@ -11,6 +11,14 @@
 
 ## Develop and build provider
 
+To start developing the provider, you need to have a working Go environment. You can find the installation instructions [here](https://golang.org/doc/install). Also you need to have Terraform installed, you can find the installation instructions [here](https://learn.hashicorp.com/tutorials/terraform/install-cli).
+
+You need to read up on the [Terraform Plugin SDK](https://developer.hashicorp.com/terraform/plugin) to understand how to build a provider. The are two versions of the SDK, the old one and the new one. This provider is built using the new one (called protocol version6 or 'Terraform Plugin Framework'). So don't use examples from Terraform Plugin SDKv2 (protocol version5) to build this provider.
+
+There is an excellent [tutorial](https://developer.hashicorp.com/terraform/tutorials/providers-plugin-framework/providers-plugin-framework-provider) on how to build a provider.
+
+Also, for handling nested objects I have studied gmichel's [Adguard provider](https://github.com/gmichels/terraform-provider-adguard), because I could not find many other (clear) examples.
+
 If you want to start development work on the provider, you have to make sure you have Terrafom configured to use your code when you want to test it.
 
 First, clone the repository to your `GOPATH`.
@@ -49,7 +57,49 @@ Run the following command to build the provider
 $ make install
 ```
 
-## Test sample configuration
+###  Debugging
+
+I can recommend using tools to debug your code.
+
+First place to start reading this [page](https://developer.hashicorp.com/terraform/plugin/debugging) by Hashicorp on how to debug a provider.
+
+Second tip is to use a local proxy to see what is happening between the provider and the API. I can recommend using [mitmproxy](https://mitmproxy.org/).
+
+## Run integration tests
+
+There are also integration tests that can be run to verify the provider's functionality. To run the integration tests, you first need a running Leostream instance. Currently there is no way to run the tests without a running Leostream instance.
+You can make sure the right data is available by using [the leostream-admin-cli tool](https://gitlab.hocmodo.nl/community/leostream-admin-cli) to add sample data.
+
+### Add a test center for testing the centers datasource
+```shell
+% leostream-admin-cli center create --access_key your_aws_access_key --name "Test AWS center" --region eu-west-1 --type amazon --secret_key your_aws_secret_key
+{
+        "stored_data": {
+                "id": 52,
+                "status": 5,
+                "center_definition": {
+                        "name": "Test AWS center",
+                        "type": "amazon",
+                        "type_label": "Amazon Web Services",
+                        "wait_inst_status": 1,
+                        "wait_sys_status": 1
+                },
+                "status_label": "Scanning"
+        }
+}%
+```
+
+### Get the center id
+```shell
+% leostream-admin-cli center list
++-----------+----------------------+--------+--------+---------------------+
+| CENTER ID | CENTER NAME          | ONLINE | TYPE   | TYPE LABEL          |
++-----------+----------------------+--------+--------+---------------------+
+|        51 | aws-center-us-east-1 |      1 | amazon | Amazon Web Services |
+|        52 | Test AWS center      |      1 | amazon | Amazon Web Services |
+```
+
+## Test example configuration from /examples
 
 
 Navigate to the `examples` directory.

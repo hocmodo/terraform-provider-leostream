@@ -135,6 +135,7 @@ func (r *basicPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, 
 					"attributes": schema.ListNestedAttribute{
 						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
 						Optional:    true,
+						Required:    false,
 						Computed:    true,
 						PlanModifiers: []planmodifier.List{
 							listplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.ListRequest, resp *listplanmodifier.RequiresReplaceIfFuncResponse) {
@@ -375,15 +376,13 @@ func (r *basicPoolResource) Create(ctx context.Context, req resource.CreateReque
 
 	// defer to common function to create or update the resource
 
-	PlStored := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics)
+	PlStored, diags := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
+	} else {
+		plan.ID = types.StringValue(strconv.FormatInt(PlStored.Stored_data.ID, 10))
 	}
-
-	// Map response body to schema and populate Computed attribute values
-	// convert int64 to string
-	plan.ID = types.StringValue(strconv.FormatInt(PlStored.Stored_data.ID, 10))
 
 	// set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
