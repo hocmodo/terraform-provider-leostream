@@ -178,36 +178,36 @@ func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 					"aws_sec_groups": schema.ListNestedAttribute{
 						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
 						Optional:    true,
-						Computed:    true,					
-							NestedObject: schema.NestedAttributeObject{
-								Attributes: map[string]schema.Attribute{
-									"gdesc": schema.StringAttribute{
-										Description: "Group description",
-										Optional: true,
-										Computed: true,
-									},
-									"gid": schema.StringAttribute{
-										Description: "Group ID",
-										Optional: true,
-										Computed: true,
-									},
-									"gname": schema.StringAttribute{
-										Description: "Group name",
-										Optional:    true,
-										Computed:    true,
-									},
-									"vpcid": schema.StringAttribute{
-										Description: "VPC ID",
-										Optional:    true,
-										Computed:    false,
-									},
+						Computed:    true,
+						NestedObject: schema.NestedAttributeObject{
+							Attributes: map[string]schema.Attribute{
+								"gdesc": schema.StringAttribute{
+									Description: "Group description",
+									Optional:    true,
+									Computed:    true,
+								},
+								"gid": schema.StringAttribute{
+									Description: "Group ID",
+									Optional:    true,
+									Computed:    true,
+								},
+								"gname": schema.StringAttribute{
+									Description: "Group name",
+									Optional:    true,
+									Computed:    true,
+								},
+								"vpcid": schema.StringAttribute{
+									Description: "VPC ID",
+									Optional:    true,
+									Computed:    false,
 								},
 							},
 						},
 					},
 				},
 			},
-		}
+		},
+	}
 }
 
 // Read refreshes the Terraform state with the latest data.
@@ -351,39 +351,39 @@ func (o centerDefinitionDataSourceModel) attrTypes() map[string]attr.Type {
 // centersDataSourceModel maps the data source schema data.
 type centerInfoDataSourceModel struct {
 	//	Aws_sec_groups types.Set    `tfsdk:"aws_sec_groups"`
-	Aws_sizes    types.List   `tfsdk:"aws_sizes"`
-	Aws_sub_nets types.List   `tfsdk:"aws_sub_nets"`
-	Os           types.String `tfsdk:"os"`
-	Os_version   types.String `tfsdk:"os_version"`
-	Aws_sec_groups  types.List `tfsdk:"aws_sec_groups"`
+	Aws_sizes      types.List   `tfsdk:"aws_sizes"`
+	Aws_sub_nets   types.List   `tfsdk:"aws_sub_nets"`
+	Os             types.String `tfsdk:"os"`
+	Os_version     types.String `tfsdk:"os_version"`
+	Aws_sec_groups types.List   `tfsdk:"aws_sec_groups"`
 }
 
 // attrTypes - return attribute types for this model
 func (o centerInfoDataSourceModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"aws_sizes":    	types.ListType{ElemType: types.StringType},
-		"aws_sub_nets": 	types.ListType{ElemType: types.StringType},
-		"os":           	types.StringType,
-		"os_version":   	types.StringType,
-		"aws_sec_groups": 	types.ListType{ElemType: types.ObjectType{AttrTypes: centerInfoSgDataSourceModel{}.attrTypes()}},
+		"aws_sizes":      types.ListType{ElemType: types.StringType},
+		"aws_sub_nets":   types.ListType{ElemType: types.StringType},
+		"os":             types.StringType,
+		"os_version":     types.StringType,
+		"aws_sec_groups": types.ListType{ElemType: types.ObjectType{AttrTypes: centerInfoSgDataSourceModel{}.attrTypes()}},
 	}
 }
 
 // centersDataSourceModel maps the data source schema data.
 type centerInfoSgDataSourceModel struct {
-	Gdesc    		types.String   	`tfsdk:"gdesc"`
-	Gid 			types.String   	`tfsdk:"gid"`
-	Gname           types.String 	`tfsdk:"gname"`
-	Vpcid   		types.String 	`tfsdk:"vpcid"`
+	Gdesc types.String `tfsdk:"gdesc"`
+	Gid   types.String `tfsdk:"gid"`
+	Gname types.String `tfsdk:"gname"`
+	Vpcid types.String `tfsdk:"vpcid"`
 }
 
 // attrTypes - return attribute types for this model
 func (o centerInfoSgDataSourceModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"gdesc":    		types.StringType,
-		"gid": 				types.StringType,
-		"gname":           	types.StringType,
-		"vpcid":   			types.StringType,
+		"gdesc": types.StringType,
+		"gid":   types.StringType,
+		"gname": types.StringType,
+		"vpcid": types.StringType,
 	}
 }
 

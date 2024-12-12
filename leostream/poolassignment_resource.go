@@ -69,7 +69,7 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				0: Included for all users (default)
 				1: Only included if user's AD record matches the offer_filter_json criteria
 				2: Only included if current date and time is within the offer_filter_json time ranges`,
-				Optional:    true,
+				Optional: true,
 				Computed: true,
 				Default:  stringdefault.StaticString("0"),
 			},
@@ -83,9 +83,9 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Attributes: map[string]schema.Attribute{
 					"join": schema.StringAttribute{
 						Description: "And/Or join condition - A or O",
-						Optional: true,
-						Computed: true,
-						Default:  stringdefault.StaticString("O"),
+						Optional:    true,
+						Computed:    true,
+						Default:     stringdefault.StaticString("O"),
 					},
 					"filters": schema.ListNestedAttribute{
 						Description: "Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers).",
@@ -112,9 +112,9 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 							Attributes: map[string]schema.Attribute{
 								"offer_filter_attribute": schema.StringAttribute{
 									Description: "Offer_filter_attribute",
-									Optional: true,
-									Computed: true,
-									Default:  stringdefault.StaticString(""),
+									Optional:    true,
+									Computed:    true,
+									Default:     stringdefault.StaticString(""),
 									PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.StringRequest, resp *stringplanmodifier.RequiresReplaceIfFuncResponse) {
 										// If the plan has a value for the nested object, we need to replace
 
@@ -124,9 +124,9 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 								},
 								"offer_filter_condition": schema.StringAttribute{
 									Description: "Offer_filter_condition",
-									Optional: true,
-									Computed: true,
-									Default:  stringdefault.StaticString(""),
+									Optional:    true,
+									Computed:    true,
+									Default:     stringdefault.StaticString(""),
 									PlanModifiers: []planmodifier.String{stringplanmodifier.RequiresReplaceIf(func(ctx context.Context, req planmodifier.StringRequest, resp *stringplanmodifier.RequiresReplaceIfFuncResponse) {
 										// If the plan has a value for the nested object, we need to replace
 
@@ -154,25 +154,25 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 			"plan_protocol_id": schema.Int64Attribute{
 				Description: "ID of protocol plan to assign",
 				Optional:    true,
-				Computed: 	 true,
+				Computed:    true,
 				Default:     int64default.StaticInt64(1),
 			},
 			"plan_power_control_id": schema.Int64Attribute{
 				Description: "ID of power plan to assign",
 				Optional:    true,
-				Computed: 	 true,
+				Computed:    true,
 				Default:     int64default.StaticInt64(1),
 			},
 			"plan_release_id": schema.Int64Attribute{
 				Description: "ID of release plan to assign",
 				Optional:    true,
-				Computed: 	 true,
+				Computed:    true,
 				Default:     int64default.StaticInt64(1),
 			},
 			"offer_quantity": schema.Int64Attribute{
 				Description: "The number of VMs to offer to a user at login",
 				Optional:    true,
-				Computed: 	 true,
+				Computed:    true,
 				Default:     int64default.StaticInt64(1),
 			},
 			"display_mode": schema.StringAttribute{
@@ -188,14 +188,14 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				8 = Pool display name : Desktop name
 				9 = Pool display name : Desktop display name
 				10= Pool display name : Machine name`,
-				Optional:    true,
-				Computed:    true,
-				Default:     stringdefault.StaticString("0"),
+				Optional: true,
+				Computed: true,
+				Default:  stringdefault.StaticString("0"),
 			},
 			"start_if_stopped": schema.Int64Attribute{
 				Description: "A boolean field indicating whether to attempt to power on a machine if it's currently stopped/suspended.",
 				Optional:    true,
-				Computed: 	 true,
+				Computed:    true,
 				Default:     int64default.StaticInt64(1),
 			},
 		},
@@ -331,7 +331,7 @@ func (r *poolAssignmentResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete existing center
-	err := r.client.DeletePoolAssignment(state.ID.ValueString(),"2", nil)
+	err := r.client.DeletePoolAssignment(state.ID.ValueString(), "2", nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Deleting Leostream poolassignment",

@@ -15,54 +15,54 @@ import (
 
 // poolAssignmentResourceModel maps the resource schema data.
 type poolAssignmentResourceModel struct {
-	ID                	  		types.String `tfsdk:"id"`
-	Pool_id				  		types.Int64  `tfsdk:"pool_id"`
-	Policy_id			 	 	types.Int64  `tfsdk:"policy_id"`
-	Offer_filter          		types.String `tfsdk:"offer_filter"`
-	Offer_filter_json 	  		types.Object `tfsdk:"offer_filter_json"`
-	Plan_protocol_id	  	  	types.Int64  `tfsdk:"plan_protocol_id"`
-	Plan_power_control_id		types.Int64  `tfsdk:"plan_power_control_id"`
-	Plan_release_id				types.Int64  `tfsdk:"plan_release_id"`
-	Offer_quantity				types.Int64  `tfsdk:"offer_quantity"`
-	Display_mode          		types.String `tfsdk:"display_mode"`
-	Start_if_stopped			types.Int64  `tfsdk:"start_if_stopped"`
+	ID                    types.String `tfsdk:"id"`
+	Pool_id               types.Int64  `tfsdk:"pool_id"`
+	Policy_id             types.Int64  `tfsdk:"policy_id"`
+	Offer_filter          types.String `tfsdk:"offer_filter"`
+	Offer_filter_json     types.Object `tfsdk:"offer_filter_json"`
+	Plan_protocol_id      types.Int64  `tfsdk:"plan_protocol_id"`
+	Plan_power_control_id types.Int64  `tfsdk:"plan_power_control_id"`
+	Plan_release_id       types.Int64  `tfsdk:"plan_release_id"`
+	Offer_quantity        types.Int64  `tfsdk:"offer_quantity"`
+	Display_mode          types.String `tfsdk:"display_mode"`
+	Start_if_stopped      types.Int64  `tfsdk:"start_if_stopped"`
 }
 
 // offerFilterModel maps filtering schema data
 type offerFilterJsonModel struct {
-	Join                  types.String `tfsdk:"join"`
-	Filters          	  types.List   `tfsdk:"filters"`
+	Join    types.String `tfsdk:"join"`
+	Filters types.List   `tfsdk:"filters"`
 }
 
 // filterModel maps filtering schema data
 type filterModel struct {
-	Offer_filter_attribute     	types.String `tfsdk:"offer_filter_attribute"`
-	Offer_filter_condition 		types.String `tfsdk:"offer_filter_condition"`
-	Offer_filter_value       	types.String `tfsdk:"offer_filter_value"`
+	Offer_filter_attribute types.String `tfsdk:"offer_filter_attribute"`
+	Offer_filter_condition types.String `tfsdk:"offer_filter_condition"`
+	Offer_filter_value     types.String `tfsdk:"offer_filter_value"`
 }
 
 // attrTypes - return attribute types for this model
 func (o filterModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"offer_filter_attribute":     	types.StringType,
-		"offer_filter_condition": 		types.StringType,
-		"offer_filter_value":       	types.StringType,
+		"offer_filter_attribute": types.StringType,
+		"offer_filter_condition": types.StringType,
+		"offer_filter_value":     types.StringType,
 	}
 }
 
 // attrTypes - return attribute types for this model
 func (o offerFilterJsonModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"join":                 types.StringType,
-		"filters":            	types.ListType{ElemType: types.ObjectType{AttrTypes: filterModel{}.attrTypes()}},
+		"join":    types.StringType,
+		"filters": types.ListType{ElemType: types.ObjectType{AttrTypes: filterModel{}.attrTypes()}},
 	}
 }
 
 // defaultObject - return default object for this model
 func (o offerFilterJsonModel) defaultObject() map[string]attr.Value {
 	return map[string]attr.Value{
-		"join":         types.StringValue("O"),
-		"filters": 		types.ListNull(types.ObjectType{AttrTypes: filterModel{}.attrTypes()}),
+		"join":    types.StringValue("O"),
+		"filters": types.ListNull(types.ObjectType{AttrTypes: filterModel{}.attrTypes()}),
 	}
 }
 
@@ -70,7 +70,7 @@ func (o offerFilterJsonModel) defaultObject() map[string]attr.Value {
 func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, policy_id string, id string) {
 	//poolassignment CONFIG
 	//get refreshed poolassignment config value from Leostream API
-	poolassignmentConfig, err := client.GetPoolAssignment(policy_id,id)
+	poolassignmentConfig, err := client.GetPoolAssignment(policy_id, id)
 
 	if err != nil {
 		diags.AddError(
@@ -95,7 +95,7 @@ func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream
 
 	// Map offer filter json to state
 	var stateOfferFilter offerFilterJsonModel
-	stateOfferFilter.Join  = types.StringValue(poolassignmentConfig.Offer_filter_json.Join)
+	stateOfferFilter.Join = types.StringValue(poolassignmentConfig.Offer_filter_json.Join)
 
 	// Create a slice of filterModel called stateOfferJsonFilters
 	var stateOfferJsonFilters []filterModel
@@ -132,7 +132,7 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Pool_id = plan.Pool_id.ValueInt64()
 	poolassignmentConfig.Offer_filter = plan.Offer_filter.ValueString()
 	poolassignmentConfig.Plan_protocol_id = plan.Plan_protocol_id.ValueInt64()
-	poolassignmentConfig.Plan_power_control_id =  plan.Plan_power_control_id.ValueInt64()
+	poolassignmentConfig.Plan_power_control_id = plan.Plan_power_control_id.ValueInt64()
 	poolassignmentConfig.Plan_release_id = plan.Plan_release_id.ValueInt64()
 	poolassignmentConfig.Offer_quantity = plan.Offer_quantity.ValueInt64()
 	poolassignmentConfig.Display_mode = plan.Display_mode.ValueString()
@@ -180,7 +180,7 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Offer_filter_json = &offerFilterJsonConfig
 
 	// Create new poolassignment
-	poolAssignmentsStored, err := r.client.CreatePoolAssignment(poolassignmentConfig, policy_id,nil)
+	poolAssignmentsStored, err := r.client.CreatePoolAssignment(poolassignmentConfig, policy_id, nil)
 
 	if err != nil {
 		diags.AddError(
@@ -208,12 +208,11 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Pool_id = plan.Pool_id.ValueInt64()
 	poolassignmentConfig.Offer_filter = plan.Offer_filter.ValueString()
 	poolassignmentConfig.Plan_protocol_id = plan.Plan_protocol_id.ValueInt64()
-	poolassignmentConfig.Plan_power_control_id =  plan.Plan_power_control_id.ValueInt64()
+	poolassignmentConfig.Plan_power_control_id = plan.Plan_power_control_id.ValueInt64()
 	poolassignmentConfig.Plan_release_id = plan.Plan_release_id.ValueInt64()
 	poolassignmentConfig.Offer_quantity = plan.Offer_quantity.ValueInt64()
 	poolassignmentConfig.Display_mode = plan.Display_mode.ValueString()
 	poolassignmentConfig.Start_if_stopped = plan.Start_if_stopped.ValueInt64()
-
 
 	// Unpack nested attributes from plan for the pool offer_filter_json
 	var planOfferFilterJson offerFilterJsonModel

@@ -47,3 +47,4 @@ tmp/
 
 # Terraform lock files
 *.lock.hcl
+terraform-provider-leostream.code-workspace
