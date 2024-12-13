@@ -75,8 +75,8 @@ func (d *policiesDataSource) Read(ctx context.Context, req datasource.ReadReques
 	// Map response body to model
 	for _, policy := range policies {
 		policyState := policiesModel{
-			ID:   types.Int64Value(int64(policy.ID)),
-			Name: types.StringValue(policy.Name),
+			ID:    types.Int64Value(int64(policy.ID)),
+			Name:  types.StringValue(policy.Name),
 			Notes: types.StringValue(policy.Notes),
 		}
 
@@ -107,7 +107,7 @@ type policiesDataSourceModel struct {
 
 // policiesModel maps policies schema data.
 type policiesModel struct {
-	ID   	types.Int64  	`tfsdk:"id"`
-	Name 	types.String 	`tfsdk:"name"`
-	Notes 	types.String 	`tfsdk:"notes"`
+	ID    types.Int64  `tfsdk:"id"`
+	Name  types.String `tfsdk:"name"`
+	Notes types.String `tfsdk:"notes"`
 }
