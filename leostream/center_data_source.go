@@ -14,8 +14,8 @@ import (
 
 // Ensure the implementation satisfies the expected interfaces.
 var (
-	_ datasource.DataSource              = &centersDataSource{}
-	_ datasource.DataSourceWithConfigure = &centersDataSource{}
+	_ datasource.DataSource              = &centerDataSource{}
+	_ datasource.DataSourceWithConfigure = &centerDataSource{}
 )
 
 // NewCentersDataSource is a helper function to simplify the provider implementation.
