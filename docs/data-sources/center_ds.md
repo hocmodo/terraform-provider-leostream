@@ -54,10 +54,22 @@ Optional:
 
 Optional:
 
+- `aws_sec_groups` (Attributes List) Array container for Pool attributes (restrict_by is 'A') or for LDAP attributes (restrict_by is 'Z', requires Active Directory Centers). (see [below for nested schema](#nestedatt--center_info--aws_sec_groups))
 - `aws_sizes` (List of String) List of available AWS sizes
 - `aws_sub_nets` (List of String) List of available AWS subnets
 - `os` (String) Operating System
 - `os_version` (String) Operating System Version
+
+<a id="nestedatt--center_info--aws_sec_groups"></a>
+### Nested Schema for `center_info.aws_sec_groups`
+
+Optional:
+
+- `gdesc` (String) Group description
+- `gid` (String) Group ID
+- `gname` (String) Group name
+- `vpcid` (String) VPC ID
+
 
 
 <a id="nestedatt--images"></a>
