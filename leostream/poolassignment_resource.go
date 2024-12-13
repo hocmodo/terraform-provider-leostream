@@ -236,7 +236,7 @@ func (r *poolAssignmentResource) Create(ctx context.Context, req resource.Create
 	// empty state as it's a create operation
 	var state poolAssignmentResourceModel
 
-	CrStored := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics, "2")
+	CrStored := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics, plan.Policy_id.String())
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -305,7 +305,7 @@ func (r *poolAssignmentResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	_ = r.UpdateNested(ctx, &plan, &state, &resp.Diagnostics, "2")
+	_ = r.UpdateNested(ctx, &plan, &state, &resp.Diagnostics, state.Policy_id.String())
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
 		return
@@ -331,7 +331,7 @@ func (r *poolAssignmentResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	// Delete existing center
-	err := r.client.DeletePoolAssignment(state.ID.ValueString(), "2", nil)
+	err := r.client.DeletePoolAssignment(state.ID.ValueString(), state.Policy_id.String(), nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error Deleting Leostream poolassignment",

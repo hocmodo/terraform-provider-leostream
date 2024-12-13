@@ -190,6 +190,7 @@ func (p *leostreamProvider) DataSources(_ context.Context) []func() datasource.D
 		NewCentersDataSource,
 		NewGatewaysDataSource,
 		NewCenterDataSource,
+		NewPoliciesDataSource,
 	}
 }
 
