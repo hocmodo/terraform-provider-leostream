@@ -202,6 +202,7 @@ func (p *leostreamProvider) Resources(_ context.Context) []func() resource.Resou
 		NewBasicPoolResource,
 		NewCenterResource,
 		NewpoolAssignmentResource,
+		NewGatewayClusterResource,
 	}
 }
 
