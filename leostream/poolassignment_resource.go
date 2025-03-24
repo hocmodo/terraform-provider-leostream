@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -343,6 +344,29 @@ func (r *poolAssignmentResource) Delete(ctx context.Context, req resource.Delete
 }
 
 func (r *poolAssignmentResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// retrieve import ID and save to id attribute
-	resource.ImportStatePassthroughID(ctx, path.Root("id"), req, resp)
+	// Expected format: <policy_id>:<pool_assignment_id>
+	idParts := strings.Split(req.ID, ":")
+
+	if len(idParts) != 2 {
+		resp.Diagnostics.AddError(
+			"Invalid Import ID",
+			fmt.Sprintf("Expected import identifier with format: <policy_id>:<pool_assignment_id>. Got: %q", req.ID),
+		)
+		return
+	}
+
+	policyID, err := strconv.ParseInt(idParts[0], 10, 64)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Invalid Policy ID",
+			fmt.Sprintf("Cannot parse policy_id as integer: %v", err),
+		)
+		return
+	}
+
+	poolAssignmentID := idParts[1]
+
+	// Set both required attributes in the state
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("policy_id"), policyID)...)
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), poolAssignmentID)...)
 }
