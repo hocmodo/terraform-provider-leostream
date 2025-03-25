@@ -1,5 +1,5 @@
 # Copyright (c) HashiCorp, Inc.
 
-# Order can be imported by specifying the numeric identifier.
+# An example of importing a Leostream pool assignment with the numeric identifier 123 and policy identifier 1
 
-terraform import leostream_pool_assignment 123
+terraform import leostream_pool_assignment 1:123

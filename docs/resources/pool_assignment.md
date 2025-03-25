@@ -17,7 +17,7 @@ The poolassignment resource allows you to create, read, update, and delete poola
 
 resource "leostream_pool_assignment" "poolassignment_1" {
 
-  policy_id    = 2
+  policy_id    = 1
   pool_id      = 148
   offer_filter = 1
   offer_filter_json = {
@@ -95,10 +95,19 @@ Optional:
 
 Import is supported using the following syntax:
 
+`$ terraform import leostream_pool_assignment <policy_id>:<poolassignment_id>`
+
+ A Leostream pool assignment can be imported by specifying the numeric policy identifier, together with the poolassignment identifier.
+
 ```shell
 # Copyright (c) HashiCorp, Inc.
 
-# Order can be imported by specifying the numeric identifier.
+# An example of importing a Leostream pool assignment with the numeric identifier 123 and policy identifier 1
 
-terraform import leostream_pool_assignment 123
+terraform import leostream_pool_assignment 1:123
+
 ```
+
+>If the two numeric identifiers are not provided, or ony one, the import will fail with an error message:
+>
+> `Expected import identifier with format: <policy_id>:<pool_assignment_id>. Got:<input> `
