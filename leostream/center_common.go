@@ -94,7 +94,7 @@ func (o *centerResourceModel) Read(ctx context.Context, client leostream.Client,
 
 	if err != nil {
 		diags.AddError(
-			"Unable to read center Configuration",
+			"Unable to read center configuration",
 			err.Error(),
 		)
 		return
@@ -171,7 +171,7 @@ func (r *centerResource) CreateNested(ctx context.Context, plan *centerResourceM
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Create center",
+			"Unable to create center",
 			err.Error(),
 		)
 		return nil

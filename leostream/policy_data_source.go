@@ -4,9 +4,11 @@ package leostream
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
 )
 
@@ -61,12 +63,15 @@ func (d *policiesDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 
 // Read refreshes the Terraform state with the latest data.
 func (d *policiesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+
+	tflog.Info(ctx, "Performing read")
+
 	var state policiesDataSourceModel
 
 	policies, err := d.client.GetPolicies()
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Read Leostream Policies",
+			"Unable to read policies",
 			err.Error(),
 		)
 		return
@@ -82,6 +87,8 @@ func (d *policiesDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 		state.Policies = append(state.Policies, policyState)
 	}
+
+	tflog.Info(ctx, "Update state")
 
 	// Set state
 	diags := resp.State.Set(ctx, &state)

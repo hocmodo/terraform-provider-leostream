@@ -139,13 +139,16 @@ func (o basicAttributesModel) attrTypes() map[string]attr.Type {
 
 // common `Read` function for both data source and resource
 func (o *basicPoolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
+
+	tflog.Info(ctx, "Performing read nested")
+
 	//Pool CONFIG
 	//get refreshed pool config value from Leostream API
 	poolConfig, err := client.GetPool(id)
 
 	if err != nil {
 		diags.AddError(
-			"Unable to read Pool Configuration",
+			"Unable to read pool configuration",
 			err.Error(),
 		)
 	}
@@ -208,6 +211,9 @@ func (o *basicPoolResourceModel) Read(ctx context.Context, client leostream.Clie
 
 // `Create` function for the resource
 func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolResourceModel, state *basicPoolResourceModel, diags *diag.Diagnostics) (*leostream.PoolsStored, diag.Diagnostics) {
+
+	tflog.Info(ctx, "Performing create nested")
+
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -335,7 +341,7 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Create Pool",
+			"Unable to create pool",
 			err.Error(),
 		)
 		return nil, *diags
@@ -346,6 +352,9 @@ func (r *basicPoolResource) CreateNested(ctx context.Context, plan *basicPoolRes
 
 // `Update` function for the resource
 func (r *basicPoolResource) UpdateNested(ctx context.Context, plan *basicPoolResourceModel, state *basicPoolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
+
+	tflog.Info(ctx, "Performing update nested")
+
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -452,7 +461,7 @@ func (r *basicPoolResource) UpdateNested(ctx context.Context, plan *basicPoolRes
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Create Pool",
+			"Unable to create pool",
 			err.Error(),
 		)
 		return nil

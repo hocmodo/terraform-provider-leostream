@@ -225,6 +225,9 @@ func (r *poolAssignmentResource) Configure(_ context.Context, req resource.Confi
 
 // Create a new resource.
 func (r *poolAssignmentResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
+	tflog.Info(ctx, "Performing create")
+
 	// retrieve values from plan
 
 	var plan poolAssignmentResourceModel
@@ -258,17 +261,15 @@ func (r *poolAssignmentResource) Create(ctx context.Context, req resource.Create
 // Read resource information.
 func (r *poolAssignmentResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
+	tflog.Info(ctx, "Performing read")
+
 	// Retrieve values from state
 	var state poolAssignmentResourceModel
-	tflog.Info(ctx, "Performing state get on center resource")
-
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	tflog.Info(ctx, "Performing Read on center resource")
 
 	// // use common model for state
 	var newState poolAssignmentResourceModel
@@ -278,6 +279,8 @@ func (r *poolAssignmentResource) Read(ctx context.Context, req resource.ReadRequ
 		resp.Diagnostics.Append(diags...)
 		return
 	}
+
+	tflog.Info(ctx, "Updating state")
 
 	//set refreshed state
 	diags = resp.State.Set(ctx, &newState)
@@ -289,6 +292,8 @@ func (r *poolAssignmentResource) Read(ctx context.Context, req resource.ReadRequ
 }
 
 func (r *poolAssignmentResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+
+	tflog.Info(ctx, "Performing update")
 
 	// retrieve values from plan
 	var plan poolAssignmentResourceModel
@@ -312,6 +317,8 @@ func (r *poolAssignmentResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
+	tflog.Info(ctx, "Updating state")
+
 	// update state
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -322,6 +329,8 @@ func (r *poolAssignmentResource) Update(ctx context.Context, req resource.Update
 }
 
 func (r *poolAssignmentResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+
+	tflog.Info(ctx, "Performing delete")
 
 	// Retrieve values from state
 	var state poolAssignmentResourceModel
@@ -335,7 +344,7 @@ func (r *poolAssignmentResource) Delete(ctx context.Context, req resource.Delete
 	err := r.client.DeletePoolAssignment(state.ID.ValueString(), state.Policy_id.String(), nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting Leostream poolassignment",
+			"Error deleting poolassignment",
 			"Could not delete poolassignment, unexpected error: "+err.Error(),
 		)
 		return
@@ -349,7 +358,7 @@ func (r *poolAssignmentResource) ImportState(ctx context.Context, req resource.I
 
 	if len(idParts) != 2 {
 		resp.Diagnostics.AddError(
-			"Invalid Import ID",
+			"Invalid import ID",
 			fmt.Sprintf("Expected import identifier with format: <policy_id>:<pool_assignment_id>. Got: %q", req.ID),
 		)
 		return
@@ -358,7 +367,7 @@ func (r *poolAssignmentResource) ImportState(ctx context.Context, req resource.I
 	policyID, err := strconv.ParseInt(idParts[0], 10, 64)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Invalid Policy ID",
+			"Invalid policy ID",
 			fmt.Sprintf("Cannot parse policy_id as integer: %v", err),
 		)
 		return

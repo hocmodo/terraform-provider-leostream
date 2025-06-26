@@ -109,7 +109,7 @@ func (r *gatewayClusterResource) Configure(_ context.Context, req resource.Confi
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected data source configuration Type",
 			fmt.Sprintf("Expected *leostream.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -121,6 +121,9 @@ func (r *gatewayClusterResource) Configure(_ context.Context, req resource.Confi
 
 // Create a new resource.
 func (r *gatewayClusterResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
+	tflog.Info(ctx, "Performing update")
+
 	// Retrieve values from plan
 	var plan gatewayClusterResourceModel
 	diags := req.Plan.Get(ctx, &plan)
@@ -140,8 +143,8 @@ func (r *gatewayClusterResource) Create(ctx context.Context, req resource.Create
 	GwClusterStored, err := r.client.CreateGatewayCluster(gwcluster, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error creating GatewayCluster",
-			"Could not create GatewayCluster, unexpected error: "+err.Error(),
+			"Error creating gatewaycluster",
+			"Could not create gatewaycluster, unexpected error: "+err.Error(),
 		)
 		return
 	}
@@ -149,6 +152,8 @@ func (r *gatewayClusterResource) Create(ctx context.Context, req resource.Create
 	// Map response body to schema and populate Computed attribute values
 	// convert int64 to string
 	plan.ID = types.StringValue(strconv.FormatInt(GwClusterStored.Stored_data.ID, 10))
+
+	tflog.Info(ctx, "Updating state")
 
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
@@ -160,6 +165,9 @@ func (r *gatewayClusterResource) Create(ctx context.Context, req resource.Create
 
 // Read resource information.
 func (r *gatewayClusterResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+
+	tflog.Info(ctx, "Performing read")
+
 	// Get current state
 	var state gatewayClusterResourceModel
 	diags := req.State.Get(ctx, &state)
@@ -172,7 +180,7 @@ func (r *gatewayClusterResource) Read(ctx context.Context, req resource.ReadRequ
 	gatewaycluster, err := r.client.GetGatewayCluster(state.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Reading Leostream GatewayCluster",
+			"Error Reading  gatewaycluster configuration",
 			"Could not read Leostream gatewaycluster ID "+state.ID.ValueString()+": "+err.Error(),
 		)
 		return
@@ -187,6 +195,8 @@ func (r *gatewayClusterResource) Read(ctx context.Context, req resource.ReadRequ
 	state.Use_src_ip = types.Int64Value(int64(gatewaycluster.Use_src_ip))
 	state.Notes = types.StringValue(gatewaycluster.Notes)
 
+	tflog.Info(ctx, "Updating state")
+
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -196,6 +206,9 @@ func (r *gatewayClusterResource) Read(ctx context.Context, req resource.ReadRequ
 }
 
 func (r *gatewayClusterResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+
+	tflog.Info(ctx, "Performing state")
+
 	// Retrieve values from plan
 	var plan gatewayClusterResourceModel
 	diags := req.Plan.Get(ctx, &plan)
@@ -229,6 +242,8 @@ func (r *gatewayClusterResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
+	tflog.Info(ctx, "Updating state")
+
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -237,6 +252,9 @@ func (r *gatewayClusterResource) Update(ctx context.Context, req resource.Update
 }
 
 func (r *gatewayClusterResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+
+	tflog.Info(ctx, "Performing delete")
+
 	// Retrieve values from state
 	var state gatewayClusterResourceModel
 	diags := req.State.Get(ctx, &state)
@@ -246,13 +264,13 @@ func (r *gatewayClusterResource) Delete(ctx context.Context, req resource.Delete
 	}
 
 	ctx = tflog.SetField(ctx, "Plan ID", state.ID.ValueString())
-	tflog.Info(ctx, "Deleting Leostream GatewayCluster")
+	tflog.Info(ctx, "Deleting gatewaycluster")
 
 	// Delete existing gatewaycluster
 	err := r.client.DeleteGatewayCluster(state.ID.ValueString(), nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting Leostream GatewayCluster",
+			"Error deleting gatewaycluster",
 			"Could not delete gatewaycluster, unexpected error: "+err.Error(),
 		)
 		return

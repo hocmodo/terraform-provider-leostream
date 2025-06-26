@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
 )
 
@@ -68,13 +69,16 @@ func (o offerFilterJsonModel) defaultObject() map[string]attr.Value {
 
 // common `Read` function for both data source and resource
 func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, policy_id string, id string) {
+
+	tflog.Info(ctx, "Performing read nested")
+
 	//poolassignment CONFIG
 	//get refreshed poolassignment config value from Leostream API
 	poolassignmentConfig, err := client.GetPoolAssignment(policy_id, id)
 
 	if err != nil {
 		diags.AddError(
-			"Unable to read center Configuration",
+			"Unable to read poolassignment configuration",
 			err.Error(),
 		)
 		return
@@ -119,6 +123,9 @@ func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream
 
 // `Create` function for the resource
 func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAssignmentResourceModel, state *poolAssignmentResourceModel, diags *diag.Diagnostics, policy_id string) *leostream.PoolAssignmentssStored {
+
+	tflog.Info(ctx, "Performing create nested")
+
 	// center CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -184,7 +191,7 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Create poolassignment",
+			"Unable to create poolassignment",
 			err.Error(),
 		)
 		return nil
@@ -195,6 +202,9 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 
 // `Update` function for the resource
 func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAssignmentResourceModel, state *poolAssignmentResourceModel, diags *diag.Diagnostics, policy_id string) *leostream.PoolAssignmentssStored {
+
+	tflog.Info(ctx, "Performing update nested")
+
 	// center CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -260,7 +270,7 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Update Poolassignment",
+			"Unable to update poolassignment",
 			err.Error(),
 		)
 		return nil

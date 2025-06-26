@@ -181,13 +181,16 @@ func (o awsAttributesModel) attrTypes() map[string]attr.Type {
 
 // common `Read` function for both data source and resource
 func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
+
+	tflog.Info(ctx, "Performing read nested")
+
 	//Pool CONFIG
 	//get refreshed pool config value from Leostream API
 	poolConfig, err := client.GetPool(id)
 
 	if err != nil {
 		diags.AddError(
-			"Unable to read Pool Configuration",
+			"Unable to read pool configuration",
 			err.Error(),
 		)
 		return
@@ -269,6 +272,9 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 
 // `Create` function for the resource
 func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourceModel, state *awsPoolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
+
+	tflog.Info(ctx, "Performing create nested")
+
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -402,7 +408,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Create Pool",
+			"Unable to create pool",
 			err.Error(),
 		)
 		return nil
@@ -413,6 +419,9 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 
 // `Update` function for the resource
 func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourceModel, state *awsPoolResourceModel, diags *diag.Diagnostics) *leostream.PoolsStored {
+
+	tflog.Info(ctx, "Performing update nested")
+
 	// Pool CONFIG
 
 	// Instantiate empty object for storing plan data
@@ -531,14 +540,12 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 
 	poolConfig.Provision = &provisionConfig
 
-	tflog.Info(ctx, "Performing Update via pool common")
-
 	// Update pool
 	PoolsStored, err := r.client.UpdatePool(plan.ID.ValueString(), poolConfig, nil)
 
 	if err != nil {
 		diags.AddError(
-			"Unable to Create Pool",
+			"Unable to update pool",
 			err.Error(),
 		)
 		return nil

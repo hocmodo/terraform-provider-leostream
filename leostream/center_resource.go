@@ -180,7 +180,7 @@ func (r *centerResource) Configure(_ context.Context, req resource.ConfigureRequ
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected data source configuration type",
 			fmt.Sprintf("Expected *leostream.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -225,17 +225,16 @@ func (r *centerResource) Create(ctx context.Context, req resource.CreateRequest,
 // Read resource information.
 func (r *centerResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
+	tflog.Info(ctx, "Performing read")
+
 	// Retrieve values from state
 	var state centerResourceModel
-	tflog.Info(ctx, "Performing state get on center resource")
 
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	tflog.Info(ctx, "Performing Read on center resource")
 
 	// // use common model for state
 	var newState centerResourceModel
@@ -245,6 +244,8 @@ func (r *centerResource) Read(ctx context.Context, req resource.ReadRequest, res
 		resp.Diagnostics.Append(diags...)
 		return
 	}
+
+	tflog.Info(ctx, "Setting state")
 
 	//set refreshed state
 	diags = resp.State.Set(ctx, &newState)
@@ -256,6 +257,8 @@ func (r *centerResource) Read(ctx context.Context, req resource.ReadRequest, res
 }
 
 func (r *centerResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+
+	tflog.Info(ctx, "Performing update")
 
 	// retrieve values from plan
 	var plan centerResourceModel
@@ -279,6 +282,8 @@ func (r *centerResource) Update(ctx context.Context, req resource.UpdateRequest,
 		return
 	}
 
+	tflog.Info(ctx, "Updating state")
+
 	// update state
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -289,6 +294,8 @@ func (r *centerResource) Update(ctx context.Context, req resource.UpdateRequest,
 }
 
 func (r *centerResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+
+	tflog.Info(ctx, "Performing delete")
 
 	// Retrieve values from state
 	var state centerResourceModel
@@ -302,7 +309,7 @@ func (r *centerResource) Delete(ctx context.Context, req resource.DeleteRequest,
 	err := r.client.DeleteCenter(state.ID.ValueString(), nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting Leostream center",
+			"Error deleting center",
 			"Could not delete center, unexpected error: "+err.Error(),
 		)
 		return

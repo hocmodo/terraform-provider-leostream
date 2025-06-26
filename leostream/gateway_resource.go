@@ -111,7 +111,7 @@ func (r *gatewayResource) Configure(_ context.Context, req resource.ConfigureReq
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected data source configuration type",
 			fmt.Sprintf("Expected *leostream.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -123,6 +123,9 @@ func (r *gatewayResource) Configure(_ context.Context, req resource.ConfigureReq
 
 // Create a new resource.
 func (r *gatewayResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
+	tflog.Info(ctx, "Performing create")
+
 	// Retrieve values from plan
 	var plan gatewayResourceModel
 	diags := req.Plan.Get(ctx, &plan)
@@ -153,6 +156,8 @@ func (r *gatewayResource) Create(ctx context.Context, req resource.CreateRequest
 	// convert int64 to string
 	plan.ID = types.StringValue(strconv.FormatInt(GwStored.Stored_data.ID, 10))
 
+	tflog.Info(ctx, "Updating state")
+
 	// Set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -163,6 +168,9 @@ func (r *gatewayResource) Create(ctx context.Context, req resource.CreateRequest
 
 // Read resource information.
 func (r *gatewayResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+
+	tflog.Info(ctx, "Performing read")
+
 	// Get current state
 	var state gatewayResourceModel
 	diags := req.State.Get(ctx, &state)
@@ -191,6 +199,8 @@ func (r *gatewayResource) Read(ctx context.Context, req resource.ReadRequest, re
 	state.Use_src_ip = types.Int64Value(int64(gateway.Use_src_ip))
 	state.Notes = types.StringValue(gateway.Notes)
 
+	tflog.Info(ctx, "Updating state")
+
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
 	resp.Diagnostics.Append(diags...)
@@ -200,6 +210,9 @@ func (r *gatewayResource) Read(ctx context.Context, req resource.ReadRequest, re
 }
 
 func (r *gatewayResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+
+	tflog.Info(ctx, "Performing update")
+
 	// Retrieve values from plan
 	var plan gatewayResourceModel
 	diags := req.Plan.Get(ctx, &plan)
@@ -235,6 +248,8 @@ func (r *gatewayResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
+	tflog.Info(ctx, "Updating state")
+
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
@@ -243,6 +258,9 @@ func (r *gatewayResource) Update(ctx context.Context, req resource.UpdateRequest
 }
 
 func (r *gatewayResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+
+	tflog.Info(ctx, "Performing delete")
+
 	// Retrieve values from state
 	var state gatewayResourceModel
 	diags := req.State.Get(ctx, &state)
@@ -252,13 +270,13 @@ func (r *gatewayResource) Delete(ctx context.Context, req resource.DeleteRequest
 	}
 
 	ctx = tflog.SetField(ctx, "Plan ID", state.ID.ValueString())
-	tflog.Info(ctx, "Deleting Leostream Gateway")
+	tflog.Info(ctx, "Deleting gateway")
 
 	// Delete existing gateway
 	err := r.client.DeleteGateway(state.ID.ValueString(), nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting Leostream Gateway",
+			"Error Deleting gateway",
 			"Could not delete gateway, unexpected error: "+err.Error(),
 		)
 		return

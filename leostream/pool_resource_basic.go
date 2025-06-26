@@ -362,8 +362,10 @@ func (r *basicPoolResource) Configure(_ context.Context, req resource.ConfigureR
 
 // Create a new resource.
 func (r *basicPoolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	// retrieve values from plan
 
+	tflog.Info(ctx, "Performing create")
+
+	// retrieve values from plan
 	var plan basicPoolResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
@@ -395,17 +397,15 @@ func (r *basicPoolResource) Create(ctx context.Context, req resource.CreateReque
 // Read resource information.
 func (r *basicPoolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
+	tflog.Info(ctx, "Performing read")
+
 	// Retrieve values from state
 	var state basicPoolResourceModel
-	tflog.Info(ctx, "Performing state get on pool resource")
-
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	tflog.Info(ctx, "Performing Read on pool resource")
 
 	// // use common model for state
 	var newState basicPoolResourceModel
@@ -419,6 +419,8 @@ func (r *basicPoolResource) Read(ctx context.Context, req resource.ReadRequest, 
 	// populate internal fields into new state
 	newState.ID = state.ID
 
+	tflog.Info(ctx, "Updating state")
+
 	//set refreshed state
 	diags = resp.State.Set(ctx, &newState)
 	resp.Diagnostics.Append(diags...)
@@ -429,6 +431,8 @@ func (r *basicPoolResource) Read(ctx context.Context, req resource.ReadRequest, 
 }
 
 func (r *basicPoolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+
+	tflog.Info(ctx, "Performing read")
 
 	// retrieve values from plan
 	var plan basicPoolResourceModel
@@ -452,6 +456,8 @@ func (r *basicPoolResource) Update(ctx context.Context, req resource.UpdateReque
 		return
 	}
 
+	tflog.Info(ctx, "Updating state")
+
 	// update state
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -462,6 +468,8 @@ func (r *basicPoolResource) Update(ctx context.Context, req resource.UpdateReque
 }
 
 func (r *basicPoolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+
+	tflog.Info(ctx, "Performing delete")
 
 	// Retrieve values from state
 	var state basicPoolResourceModel
@@ -475,7 +483,7 @@ func (r *basicPoolResource) Delete(ctx context.Context, req resource.DeleteReque
 	err := r.client.DeletePool(state.ID.ValueString(), nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Error Deleting Leostream Pool",
+			"Error deleting pool",
 			"Could not delete pool, unexpected error: "+err.Error(),
 		)
 		return

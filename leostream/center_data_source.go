@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
 )
 
@@ -212,6 +213,9 @@ func (d *centerDataSource) Schema(_ context.Context, _ datasource.SchemaRequest,
 
 // Read refreshes the Terraform state with the latest data.
 func (d *centerDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+
+	tflog.Info(ctx, "Performing read")
+
 	var state centerDSModel
 
 	diags := req.Config.Get(ctx, &state)
@@ -220,7 +224,7 @@ func (d *centerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	center, err := d.client.GetCenter(state.ID.String())
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Read Leostream Center",
+			"Unable to read center configuration",
 			err.Error(),
 		)
 		return
@@ -286,6 +290,8 @@ func (d *centerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	}
 
 	state.Images, _ = types.ListValueFrom(ctx, types.ObjectType{AttrTypes: imagesModel{}.attrTypes()}, stateImages)
+
+	tflog.Info(ctx, "Setting state")
 
 	// Set state
 	diags = resp.State.Set(ctx, &state)

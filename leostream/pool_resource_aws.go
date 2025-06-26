@@ -418,7 +418,7 @@ func (r *awsPoolResource) Configure(_ context.Context, req resource.ConfigureReq
 
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected data source configuration type",
 			fmt.Sprintf("Expected *leostream.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
@@ -430,6 +430,9 @@ func (r *awsPoolResource) Configure(_ context.Context, req resource.ConfigureReq
 
 // Create a new resource.
 func (r *awsPoolResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
+
+	tflog.Info(ctx, "Performing create")
+
 	// retrieve values from plan
 
 	var plan awsPoolResourceModel
@@ -454,6 +457,8 @@ func (r *awsPoolResource) Create(ctx context.Context, req resource.CreateRequest
 	// convert int64 to string
 	plan.ID = types.StringValue(strconv.FormatInt(PlStored.Stored_data.ID, 10))
 
+	tflog.Info(ctx, "Updating state")
+
 	// set state to fully populated data
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -465,17 +470,15 @@ func (r *awsPoolResource) Create(ctx context.Context, req resource.CreateRequest
 // Read resource information.
 func (r *awsPoolResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 
+	tflog.Info(ctx, "Performing read")
+
 	// Retrieve values from state
 	var state awsPoolResourceModel
-	tflog.Info(ctx, "Performing state get on pool resource")
-
 	diags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-
-	tflog.Info(ctx, "Performing Read on pool resource")
 
 	// // use common model for state
 	var newState awsPoolResourceModel
@@ -489,6 +492,7 @@ func (r *awsPoolResource) Read(ctx context.Context, req resource.ReadRequest, re
 	// populate internal fields into new state
 	newState.ID = state.ID
 
+	tflog.Info(ctx, "Updating state")
 	//set refreshed state
 	diags = resp.State.Set(ctx, &newState)
 	resp.Diagnostics.Append(diags...)
@@ -499,6 +503,8 @@ func (r *awsPoolResource) Read(ctx context.Context, req resource.ReadRequest, re
 }
 
 func (r *awsPoolResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
+
+	tflog.Info(ctx, "Performing update")
 
 	// retrieve values from plan
 	var plan awsPoolResourceModel
@@ -522,6 +528,8 @@ func (r *awsPoolResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
+	tflog.Info(ctx, "Updating state")
+
 	// update state
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -532,6 +540,8 @@ func (r *awsPoolResource) Update(ctx context.Context, req resource.UpdateRequest
 }
 
 func (r *awsPoolResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
+
+	tflog.Info(ctx, "Performing delete")
 
 	// Retrieve values from state
 	var state awsPoolResourceModel

@@ -4,9 +4,11 @@ package leostream
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"gitlab.hocmodo.nl/community/leostream-client-go"
 )
 
@@ -57,12 +59,15 @@ func (d *gatewaysDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 
 // Read refreshes the Terraform state with the latest data.
 func (d *gatewaysDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+
+	tflog.Info(ctx, "Performing read")
+
 	var state gatewaysDataSourceModel
 
 	gateways, err := d.client.GetGateways()
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to Read Leostream Gateways",
+			"Unable to read gateways",
 			err.Error(),
 		)
 		return
@@ -77,6 +82,8 @@ func (d *gatewaysDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 		state.Gateways = append(state.Gateways, gatewayState)
 	}
+
+	tflog.Info(ctx, "Update state")
 
 	// Set state
 	diags := resp.State.Set(ctx, &state)
