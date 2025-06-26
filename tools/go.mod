@@ -1,6 +1,7 @@
 module tools
 
-go 1.21
+go 1.23.0
+
 toolchain go1.24.1
 
 require (
@@ -25,7 +26,7 @@ require (
 	github.com/cli/go-gh v1.2.1 // indirect
 	github.com/cli/safeexec v1.0.0 // indirect
 	github.com/cli/shurcooL-graphql v0.0.2 // indirect
-	github.com/cloudflare/circl v1.3.7 // indirect
+	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-openapi/errors v0.20.2 // indirect
