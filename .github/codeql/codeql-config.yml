@@ -6,13 +6,14 @@ query-filters:
         - "experimental"
 
 paths:
-  - "**/*.go"
+  - "leostream/*.go"
   - "go.mod"
   - "go.sum"
 
 paths-ignore:
   - "**/*_test.go"
   - "**/vendor/**"
+  - "**/tools/**"
 
 build-mode: manual
 
