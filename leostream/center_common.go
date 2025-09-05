@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
-	"gitlab.hocmodo.nl/community/leostream-client-go"
+	"gitlab.com/hocmodo/leostream-client-go"
 )
 
 // centerResourceModel maps the resource schema data.

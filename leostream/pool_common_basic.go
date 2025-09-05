@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"gitlab.hocmodo.nl/community/leostream-client-go"
+	"gitlab.com/hocmodo/leostream-client-go"
 )
 
 // poolResourceModel maps the resource schema data.

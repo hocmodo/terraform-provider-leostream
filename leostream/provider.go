@@ -4,6 +4,8 @@ package leostream
 
 import (
 	"context"
+	"os"
+
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
@@ -11,8 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-	"gitlab.hocmodo.nl/community/leostream-client-go"
-	"os"
+	"gitlab.com/hocmodo/leostream-client-go"
 )
 
 // Ensure the implementation satisfies the expected interfaces
