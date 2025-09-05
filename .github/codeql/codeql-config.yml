@@ -1,0 +1,21 @@
+name: "CodeQL Config"
+
+query-filters:
+  - exclude:
+      tags:
+        - "experimental"
+
+paths:
+  - "**/*.go"
+  - "go.mod"
+  - "go.sum"
+
+paths-ignore:
+  - "**/*_test.go"
+  - "**/vendor/**"
+
+build-mode: manual
+
+build:
+  commands:
+    - go build ./...
