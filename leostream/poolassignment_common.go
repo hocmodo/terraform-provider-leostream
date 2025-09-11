@@ -27,6 +27,9 @@ type poolAssignmentResourceModel struct {
 	Offer_quantity        types.Int64  `tfsdk:"offer_quantity"`
 	Display_mode          types.String `tfsdk:"display_mode"`
 	Start_if_stopped      types.Int64  `tfsdk:"start_if_stopped"`
+	On_assign_url         types.String `tfsdk:"on_assign_url"`
+	On_assign_url_cb      types.Int64  `tfsdk:"on_assign_url_cb"`
+	On_assign_url_timeout types.Int64  `tfsdk:"on_assign_url_timeout"`
 }
 
 // offerFilterModel maps filtering schema data
@@ -96,6 +99,9 @@ func (o *poolAssignmentResourceModel) Read(ctx context.Context, client leostream
 	o.Policy_id = types.Int64Value(poolassignmentConfig.Policy_id)
 	o.Pool_id = types.Int64Value(poolassignmentConfig.Pool_id)
 	o.Start_if_stopped = types.Int64Value(poolassignmentConfig.Start_if_stopped)
+	o.On_assign_url = types.StringValue(poolassignmentConfig.On_assign_url)
+	o.On_assign_url_cb = types.Int64Value(poolassignmentConfig.On_assign_url_cb)
+	o.On_assign_url_timeout = types.Int64Value(poolassignmentConfig.On_assign_url_timeout)
 
 	// Map offer filter json to state
 	var stateOfferFilter offerFilterJsonModel
@@ -144,6 +150,9 @@ func (r *poolAssignmentResource) CreateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Offer_quantity = plan.Offer_quantity.ValueInt64()
 	poolassignmentConfig.Display_mode = plan.Display_mode.ValueString()
 	poolassignmentConfig.Start_if_stopped = plan.Start_if_stopped.ValueInt64()
+	poolassignmentConfig.On_assign_url = plan.On_assign_url.ValueString()
+	poolassignmentConfig.On_assign_url_cb = plan.On_assign_url_cb.ValueInt64()
+	poolassignmentConfig.On_assign_url_timeout = plan.On_assign_url_timeout.ValueInt64()
 
 	// Unpack nested attributes from plan for the pool offer_filter_json
 	var planOfferFilterJson offerFilterJsonModel
@@ -223,6 +232,9 @@ func (r *poolAssignmentResource) UpdateNested(ctx context.Context, plan *poolAss
 	poolassignmentConfig.Offer_quantity = plan.Offer_quantity.ValueInt64()
 	poolassignmentConfig.Display_mode = plan.Display_mode.ValueString()
 	poolassignmentConfig.Start_if_stopped = plan.Start_if_stopped.ValueInt64()
+	poolassignmentConfig.On_assign_url = plan.On_assign_url.ValueString()
+	poolassignmentConfig.On_assign_url_cb = plan.On_assign_url_cb.ValueInt64()
+	poolassignmentConfig.On_assign_url_timeout = plan.On_assign_url_timeout.ValueInt64()
 
 	// Unpack nested attributes from plan for the pool offer_filter_json
 	var planOfferFilterJson offerFilterJsonModel

@@ -17,7 +17,7 @@ The poolassignment resource allows you to create, read, update, and delete poola
 
 resource "leostream_pool_assignment" "poolassignment_1" {
 
-  policy_id    = 1
+  policy_id    = 2
   pool_id      = 148
   offer_filter = 1
   offer_filter_json = {
@@ -30,10 +30,13 @@ resource "leostream_pool_assignment" "poolassignment_1" {
     ],
     join = "o"
   }
-  plan_protocol_id = 2
-  offer_quantity   = 1
-  display_mode     = 0
-  start_if_stopped = 1
+  plan_protocol_id      = 2
+  offer_quantity        = 1
+  display_mode          = 0
+  start_if_stopped      = 1
+  on_assign_url         = "http://mycallback.com"
+  on_assign_url_cb      = 1
+  on_assign_url_timeout = 5
 }
 ```
 
@@ -65,6 +68,9 @@ resource "leostream_pool_assignment" "poolassignment_1" {
 				2: Only included if current date and time is within the offer_filter_json time ranges
 - `offer_filter_json` (Attributes) offer_filter_json (see [below for nested schema](#nestedatt--offer_filter_json))
 - `offer_quantity` (Number) The number of VMs to offer to a user at login
+- `on_assign_url` (String) URL to launch when a desktop is assigned to a user.
+- `on_assign_url_cb` (Number) Whether to use the callback URL during desktop assignment
+- `on_assign_url_timeout` (Number) Timeout in seconds used when fetching the on_assign_url.
 - `plan_power_control_id` (Number) ID of power plan to assign
 - `plan_protocol_id` (Number) ID of protocol plan to assign
 - `plan_release_id` (Number) ID of release plan to assign
@@ -95,19 +101,10 @@ Optional:
 
 Import is supported using the following syntax:
 
-`$ terraform import leostream_pool_assignment <policy_id>:<poolassignment_id>`
-
- A Leostream pool assignment can be imported by specifying the numeric policy identifier, together with the poolassignment identifier.
-
 ```shell
 # Copyright (c) HashiCorp, Inc.
 
 # An example of importing a Leostream pool assignment with the numeric identifier 123 and policy identifier 1
 
 terraform import leostream_pool_assignment 1:123
-
 ```
-
->If the two numeric identifiers are not provided, or ony one, the import will fail with an error message:
->
-> `Expected import identifier with format: <policy_id>:<pool_assignment_id>. Got:<input> `
