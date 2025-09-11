@@ -2,7 +2,7 @@
 
 resource "leostream_pool_assignment" "poolassignment_1" {
 
-  policy_id    = 2
+  policy_id    = 1
   pool_id      = 148
   offer_filter = 1
   offer_filter_json = {
