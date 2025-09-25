@@ -199,6 +199,24 @@ func (r *poolAssignmentResource) Schema(_ context.Context, _ resource.SchemaRequ
 				Computed:    true,
 				Default:     int64default.StaticInt64(1),
 			},
+			"on_assign_url": schema.StringAttribute{
+				Description: "URL to launch when a desktop is assigned to a user.",
+				Optional:    true,
+				Computed:    true,
+				Default:     stringdefault.StaticString(""),
+			},
+			"on_assign_url_cb": schema.Int64Attribute{
+				Description: "Whether to use the callback URL during desktop assignment",
+				Optional:    true,
+				Computed:    true,
+				Default:     int64default.StaticInt64(0),
+			},
+			"on_assign_url_timeout": schema.Int64Attribute{
+				Description: "Timeout in seconds used when fetching the on_assign_url.",
+				Optional:    true,
+				Computed:    true,
+				Default:     int64default.StaticInt64(0),
+			},
 		},
 	}
 }
