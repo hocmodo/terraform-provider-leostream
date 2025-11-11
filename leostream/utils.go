@@ -3,8 +3,6 @@
 package leostream
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
