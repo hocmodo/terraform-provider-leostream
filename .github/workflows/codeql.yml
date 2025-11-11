@@ -35,7 +35,7 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: go
-          build-mode: none  # we'll compile explicitly in the next step
+          build-mode: manual # we'll compile explicitly in the next step
           config-file: codeql-config.yml
 
       - name: Build Go provider(main module only)
