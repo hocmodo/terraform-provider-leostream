@@ -3,6 +3,7 @@
 package main
 
 import (
+	"fmt"
 	"context"
 	"flag"
 	"terraform-provider-leostream/leostream"
@@ -13,6 +14,9 @@ import (
 func main() {
 
 	var debug bool
+	// CodeQL test: hardcoded credential
+	var secret = "12345"
+	fmt.Printf("secret: %v\n", secret)
 
 	flag.BoolVar(&debug, "debug", false, "set to true to run the provider with support for debuggers like delve")
 	flag.Parse()

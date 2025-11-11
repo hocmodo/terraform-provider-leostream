@@ -12,9 +12,6 @@ import (
 // converts an array of string to array of attr.Value of StringType
 func convertToAttrInt64(elems []int64) []attr.Value {
 	var output []attr.Value
-	// CodeQL test: hardcoded credential
-	var secret = "12345"
-	fmt.Printf("secret: %v\n", secret)
 
 	for _, item := range elems {
 		output = append(output, types.Int64Value(item))
