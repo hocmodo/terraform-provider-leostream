@@ -1,22 +1,45 @@
-name: "CodeQL Config"
+name: "CodeQL"
 
-query-filters:
-  - exclude:
-      tags:
-        - "experimental"
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 1 * * 0'
 
-paths:
-  - "leostream/*.go"
-  - "go.mod"
-  - "go.sum"
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
 
-paths-ignore:
-  - "**/*_test.go"
-  - "**/vendor/**"
-  - "**/tools/**"
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'go' ]
 
-build-mode: manual
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-build:
-  commands:
-    - go build ./...
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Build Go provider
+        run: |
+          go mod tidy
+          go build ./...
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
