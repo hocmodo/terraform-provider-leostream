@@ -36,6 +36,7 @@ jobs:
         with:
           languages: go
           build-mode: none  # we'll compile explicitly in the next step
+          config-file: codeql-config.yml
 
       - name: Build Go provider(main module only)
         run: |
@@ -43,4 +44,4 @@ jobs:
           go list ./... | grep -v '^.*/tools/.*$' | xargs -r -n1 go build
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4

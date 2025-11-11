@@ -1,0 +1,15 @@
+name: CodeQL config
+
+# Positively include only the directories/packages that belong to your main module.
+# Adjust these to your layout (examples shown):
+paths:
+  - cmd/**
+  - internal/**
+  - pkg/**
+  - provider/**
+  - leostream/**
+  - main.go
+
+# Backstop: explicitly ignore the tools module.
+paths-ignore:
+  - tools/**
