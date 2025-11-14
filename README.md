@@ -1,6 +1,5 @@
 # Terraform Provider Leostream
 
-
 **TL;DR** This Leostream provider acts as a bridge between Terraform and the Leostream REST API.
 
  Leostream is a Remote Desktop Access platform for specialized display protocols. It features a broker component which has a lot of configuration options. These are configurable using the GUI...
@@ -11,7 +10,7 @@
 
 ## Develop and build provider
 
-To start developing the provider, you need to have a working Go environment. You can find the installation instructions [here](https://golang.org/doc/install). Also you need to have Terraform installed, you can find the installation instructions [here](https://learn.hashicorp.com/tutorials/terraform/install-cli).
+To start developing the provider, you need to have a working Go environment. You can find the installation instructions [here](https://golang.org/doc/install). Also you need to have Terraform installed, you can find the installation instructions [at the hashicorp site.](https://learn.hashicorp.com/tutorials/terraform/install-cli).
 
 You need to read up on the [Terraform Plugin SDK](https://developer.hashicorp.com/terraform/plugin) to understand how to build a provider. The are two versions of the SDK, the old one and the new one. This provider is built using the new one (called protocol version6 or 'Terraform Plugin Framework'). So don't use examples from Terraform Plugin SDKv2 (protocol version5) to build this provider.
 
@@ -24,13 +23,13 @@ If you want to start development work on the provider, you have to make sure you
 First, clone the repository to your `GOPATH`.
 
 ```shell
-$ git clone
+% git clone
 ```
 
 Navigate to the directory and run the following command to install the dependencies.
 
 ```shell
-$ go mod tidy
+% go mod tidy
 ```
 
 Add a dev_overrides to the terraform configuration file  (typiclly $HOME/.terraformrc)  to point to the directory you checked out.
@@ -50,14 +49,13 @@ provider_installation {
 }
 ```
 
-
-Run the following command to build the provider
+Run the following command to build the provider, which will create the binary in `~/go/bin`.
 
 ```shell
-$ make install
+% make install
 ```
 
-###  Debugging
+### Debugging
 
 I can recommend using tools to debug your code.
 
@@ -71,6 +69,7 @@ There are also integration tests that can be run to verify the provider's functi
 You can make sure the right data is available by using [the leostream-admin-cli tool](https://gitlab.hocmodo.nl/community/leostream-admin-cli) to add sample data.
 
 ### Add a test center for testing the centers datasource
+
 ```shell
 % leostream-admin-cli center create --access_key your_aws_access_key --name "Test AWS center" --region eu-west-1 --type amazon --secret_key your_aws_secret_key
 {
@@ -90,6 +89,7 @@ You can make sure the right data is available by using [the leostream-admin-cli 
 ```
 
 ### Get the center id
+
 ```shell
 % leostream-admin-cli center list
 +-----------+----------------------+--------+--------+---------------------+
@@ -101,31 +101,28 @@ You can make sure the right data is available by using [the leostream-admin-cli 
 
 ## Test example configuration from /examples
 
-
 Navigate to the `examples` directory.
 
 ```shell
-$ cd examples/pick-one
+% cd examples/pick-one
 ```
 
 Run the following command to initialize the workspace and apply the sample configuration.
 
 ```shell
-$ terraform init && terraform plan/apply -var-file="secret.tfvars"
+% terraform init && terraform plan/apply -var-file="secret.tfvars"
 ```
 
 or skip the terraform init if you have the dev_overrides in the terraformrc file.
 
-
-
 ## More enhanced way for importing resources
 
-Use https://gitlab.hocmodo.nl/community/leostream-admin-cli to pull the data from the Leostream API and get the id's
+Use the [admin-cli](https://gitlab.hocmodo.nl/community/leostream-admin-cli) to pull the data from the Leostream API and get the id's
 
 ## AWS Pools
 
 ```shell
-for pool_id in `leostream-admin-cli pool list --json | jq '.[].id'`
+% for pool_id in `leostream-admin-cli pool list --json | jq '.[].id'`
 do
   terraform import leostream_aws_pool $pool_id
 done
@@ -134,17 +131,16 @@ done
 ## Basic pools
 
 ```shell
-for pool_id in `leostream-admin-cli pool list --json | jq '.[].id'`
+% for pool_id in `leostream-admin-cli pool list --json | jq '.[].id'`
 do
     terraform import leostream_basic_pool $pool_id
 done
 ```
 
-
 ## Centers
 
 ```shell
-for center_id in `leostream-admin-cli center list --json | jq '.[].id'`
+% for center_id in `leostream-admin-cli center list --json | jq '.[].id'`
 do
   terraform import leostream_center $center_id
 done
@@ -153,7 +149,7 @@ done
 ## Gateways
 
 ```shell
-for gateway_id in `leostream-admin-cli gateway list --json | jq '.[].id'`
+% for gateway_id in `leostream-admin-cli gateway list --json | jq '.[].id'`
 do
   terraform import leostream_gateway $gateway_id
 done
