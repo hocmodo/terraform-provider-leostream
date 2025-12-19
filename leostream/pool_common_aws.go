@@ -68,53 +68,56 @@ func (o awsPoolDefinitionModel) defaultObject() map[string]attr.Value {
 
 // poolProvisionModel maps filtering schema data
 type awsProvisionModel struct {
-	Provision_on_off          types.Int64  `tfsdk:"provision_on_off"`
-	Provision_max             types.Int64  `tfsdk:"provision_max"`
-	Provision_vm_id           types.Int64  `tfsdk:"provision_vm_id"`
-	Provision_server_id       types.Int64  `tfsdk:"provision_server_id"`
-	Provision_vm_name         types.String `tfsdk:"provision_vm_name"`
-	Provision_threshold       types.Int64  `tfsdk:"provision_threshold"`
-	Provision_tenant_id       types.Int64  `tfsdk:"provision_tenant_id"`
-	Provision_vm_display_name types.String `tfsdk:"provision_vm_display_name"`
-	Provision_url             types.String `tfsdk:"provision_url"`
-	Provision_limits_enforce  types.Int64  `tfsdk:"provision_limits_enforce"`
-	Mark_deletable            types.Int64  `tfsdk:"mark_deletable"`
-	Center                    types.Object `tfsdk:"center"`
+	Provision_on_off             types.Int64  `tfsdk:"provision_on_off"`
+	Provision_max                types.Int64  `tfsdk:"provision_max"`
+	Provision_vm_id              types.Int64  `tfsdk:"provision_vm_id"`
+	Provision_server_id          types.Int64  `tfsdk:"provision_server_id"`
+	Provision_vm_name            types.String `tfsdk:"provision_vm_name"`
+	Provision_vm_name_next_value types.Int64  `tfsdk:"provision_vm_name_next_value"`
+	Provision_threshold          types.Int64  `tfsdk:"provision_threshold"`
+	Provision_tenant_id          types.Int64  `tfsdk:"provision_tenant_id"`
+	Provision_vm_display_name    types.String `tfsdk:"provision_vm_display_name"`
+	Provision_url                types.String `tfsdk:"provision_url"`
+	Provision_limits_enforce     types.Int64  `tfsdk:"provision_limits_enforce"`
+	Mark_deletable               types.Int64  `tfsdk:"mark_deletable"`
+	Center                       types.Object `tfsdk:"center"`
 }
 
 // attrTypes - return attribute types for this model
 func (o awsProvisionModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"provision_on_off":          types.Int64Type,
-		"provision_max":             types.Int64Type,
-		"provision_vm_id":           types.Int64Type,
-		"provision_server_id":       types.Int64Type,
-		"provision_vm_name":         types.StringType,
-		"provision_threshold":       types.Int64Type,
-		"provision_tenant_id":       types.Int64Type,
-		"provision_vm_display_name": types.StringType,
-		"provision_url":             types.StringType,
-		"provision_limits_enforce":  types.Int64Type,
-		"mark_deletable":            types.Int64Type,
-		"center":                    types.ObjectType{AttrTypes: awsCenterModel{}.attrTypes()},
+		"provision_on_off":             types.Int64Type,
+		"provision_max":                types.Int64Type,
+		"provision_vm_id":              types.Int64Type,
+		"provision_server_id":          types.Int64Type,
+		"provision_vm_name":            types.StringType,
+		"provision_vm_name_next_value": types.Int64Type,
+		"provision_threshold":          types.Int64Type,
+		"provision_tenant_id":          types.Int64Type,
+		"provision_vm_display_name":    types.StringType,
+		"provision_url":                types.StringType,
+		"provision_limits_enforce":     types.Int64Type,
+		"mark_deletable":               types.Int64Type,
+		"center":                       types.ObjectType{AttrTypes: awsCenterModel{}.attrTypes()},
 	}
 }
 
 // defaultObject - return default object for this model representing the provision object
 func (o awsProvisionModel) defaultObject() map[string]attr.Value {
 	return map[string]attr.Value{
-		"provision_on_off":          types.Int64Value(CONFIG_POOL_PROVISION_ON_OFF),
-		"provision_max":             types.Int64Value(CONFIG_POOL_PROVISION_MAX),
-		"provision_vm_id":           types.Int64Value(CONFIG_POOL_PROVISION_VM_ID),
-		"provision_server_id":       types.Int64Value(CONFIG_POOL_PROVISION_SERVER_ID),
-		"provision_vm_name":         types.StringValue(""),
-		"provision_threshold":       types.Int64Value(CONFIG_POOL_PROVISION_THRESHOLD),
-		"provision_tenant_id":       types.Int64Value(CONFIG_POOL_PROVISION_TENANT_ID),
-		"provision_vm_display_name": types.StringValue(""),
-		"provision_url":             types.StringValue(""),
-		"provision_limits_enforce":  types.Int64Value(CONFIG_POOL_PROVISION_LIMITS_ENFORCE),
-		"mark_deletable":            types.Int64Value(CONFIG_POOL_MARK_DELETABLE),
-		"center":                    types.ObjectValueMust(awsCenterModel{}.attrTypes(), awsCenterModel{}.defaultObject()),
+		"provision_on_off":             types.Int64Value(CONFIG_POOL_PROVISION_ON_OFF),
+		"provision_max":                types.Int64Value(CONFIG_POOL_PROVISION_MAX),
+		"provision_vm_id":              types.Int64Value(CONFIG_POOL_PROVISION_VM_ID),
+		"provision_server_id":          types.Int64Value(CONFIG_POOL_PROVISION_SERVER_ID),
+		"provision_vm_name":            types.StringValue(""),
+		"provision_vm_name_next_value": types.Int64Value(CONFIG_POOL_PROVISION_VM_NAME_NEXT_VALUE),
+		"provision_threshold":          types.Int64Value(CONFIG_POOL_PROVISION_THRESHOLD),
+		"provision_tenant_id":          types.Int64Value(CONFIG_POOL_PROVISION_TENANT_ID),
+		"provision_vm_display_name":    types.StringValue(""),
+		"provision_url":                types.StringValue(""),
+		"provision_limits_enforce":     types.Int64Value(CONFIG_POOL_PROVISION_LIMITS_ENFORCE),
+		"mark_deletable":               types.Int64Value(CONFIG_POOL_MARK_DELETABLE),
+		"center":                       types.ObjectValueMust(awsCenterModel{}.attrTypes(), awsCenterModel{}.defaultObject()),
 	}
 }
 
@@ -305,6 +308,7 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 	stateProvision.Provision_vm_id = types.Int64Value(poolConfig.Provision.Provision_vm_id)
 	stateProvision.Provision_server_id = types.Int64Value(poolConfig.Provision.Provision_server_id)
 	stateProvision.Provision_vm_name = types.StringValue(poolConfig.Provision.Provision_vm_name)
+	stateProvision.Provision_vm_name_next_value = types.Int64Value(poolConfig.Provision.Provision_vm_name_next_value)
 	stateProvision.Provision_threshold = types.Int64Value(poolConfig.Provision.Provision_threshold)
 	stateProvision.Provision_tenant_id = types.Int64Value(poolConfig.Provision.Provision_tenant_id)
 	stateProvision.Provision_vm_display_name = types.StringValue(poolConfig.Provision.Provision_vm_display_name)
@@ -484,6 +488,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	provisionConfig.Provision_vm_id = planProvision.Provision_vm_id.ValueInt64()
 	provisionConfig.Provision_server_id = planProvision.Provision_server_id.ValueInt64()
 	provisionConfig.Provision_vm_name = planProvision.Provision_vm_name.ValueString()
+	provisionConfig.Provision_vm_name_next_value = planProvision.Provision_vm_name_next_value.ValueInt64()
 	provisionConfig.Provision_threshold = planProvision.Provision_threshold.ValueInt64()
 	provisionConfig.Provision_tenant_id = planProvision.Provision_tenant_id.ValueInt64()
 	provisionConfig.Provision_vm_display_name = planProvision.Provision_vm_display_name.ValueString()
@@ -665,6 +670,7 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	provisionConfig.Provision_vm_id = planProvision.Provision_vm_id.ValueInt64()
 	provisionConfig.Provision_server_id = planProvision.Provision_server_id.ValueInt64()
 	provisionConfig.Provision_vm_name = planProvision.Provision_vm_name.ValueString()
+	provisionConfig.Provision_vm_name_next_value = planProvision.Provision_vm_name_next_value.ValueInt64()
 	provisionConfig.Provision_threshold = planProvision.Provision_threshold.ValueInt64()
 	provisionConfig.Provision_tenant_id = planProvision.Provision_tenant_id.ValueInt64()
 	provisionConfig.Provision_vm_display_name = planProvision.Provision_vm_display_name.ValueString()

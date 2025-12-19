@@ -333,6 +333,12 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 						Computed:    true,
 						Default:     stringdefault.StaticString(""),
 					},
+					"provision_vm_name_next_value": schema.Int64Attribute{
+						Description: "The next value for sequential VM names.",
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(CONFIG_POOL_PROVISION_VM_NAME_NEXT_VALUE),
+					},
 					"center": schema.SingleNestedAttribute{
 						Description: `Container for parameters related to Center. Offically:
 						Google (object)
@@ -487,13 +493,13 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								Description: "Age of pool history to retain (in days).",
 								Optional:    true,
 								Computed:    true,
-								Default:     int64default.StaticInt64(0),
+								Default:     int64default.StaticInt64(30),
 							},
 							"pool_history_interval": schema.Int64Attribute{
-								Description: "Interval for pool history retention (in hours).",
+								Description: "Interval for pool history retention (in minutes).",
 								Optional:    true,
 								Computed:    true,
-								Default:     int64default.StaticInt64(0),
+								Default:     int64default.StaticInt64(15),
 							},
 						},
 					},
