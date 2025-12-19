@@ -404,6 +404,101 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 					},
 				},
 			},
+			"pool_stats": schema.SingleNestedAttribute{
+				Description: "Container for pool statistics including VM counts and statuses. This is a read-only computed field.",
+				Optional:    false,
+				Computed:    true,
+				Attributes: map[string]schema.Attribute{
+					"counts_updated": schema.StringAttribute{
+						Description: "Timestamp when the pool statistics were last updated.",
+						Computed:    true,
+					},
+					"total_vm": schema.Int64Attribute{
+						Description: "Total number of VMs in the pool.",
+						Computed:    true,
+					},
+					"total_agent_running": schema.Int64Attribute{
+						Description: "Total number of VMs with agent running.",
+						Computed:    true,
+					},
+					"total_vm_running": schema.Int64Attribute{
+						Description: "Total number of VMs in running state.",
+						Computed:    true,
+					},
+					"total_vm_stopped": schema.Int64Attribute{
+						Description: "Total number of VMs in stopped state.",
+						Computed:    true,
+					},
+					"total_vm_suspended": schema.Int64Attribute{
+						Description: "Total number of VMs in suspended state.",
+						Computed:    true,
+					},
+					"total_logged_in": schema.Int64Attribute{
+						Description: "Total number of users logged in.",
+						Computed:    true,
+					},
+					"total_connected": schema.Int64Attribute{
+						Description: "Total number of active connections.",
+						Computed:    true,
+					},
+					"assigned_vm": schema.Int64Attribute{
+						Description: "Number of assigned VMs in the pool.",
+						Computed:    true,
+					},
+					"available_vm": schema.Int64Attribute{
+						Description: "Number of available VMs in the pool.",
+						Computed:    true,
+					},
+					"unavailable_vm": schema.Int64Attribute{
+						Description: "Number of unavailable VMs in the pool.",
+						Computed:    true,
+					},
+				},
+			},
+			"log": schema.SingleNestedAttribute{
+				Description: "Container for pool logging configuration including thresholds and history retention settings.",
+				Optional:    true,
+				Computed:    true,
+				Attributes: map[string]schema.Attribute{
+					"log_information_threshold": schema.Int64Attribute{
+						Description: "Threshold for information level log messages.",
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
+					},
+					"log_warning_threshold": schema.Int64Attribute{
+						Description: "Threshold for warning level log messages.",
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
+					},
+					"log_error_threshold": schema.Int64Attribute{
+						Description: "Threshold for error level log messages.",
+						Optional:    true,
+						Computed:    true,
+						Default:     int64default.StaticInt64(0),
+					},
+					"retain_history": schema.SingleNestedAttribute{
+						Description: "Configuration for retaining pool history.",
+						Optional:    true,
+						Computed:    true,
+						Attributes: map[string]schema.Attribute{
+							"pool_history_age": schema.Int64Attribute{
+								Description: "Age of pool history to retain (in days).",
+								Optional:    true,
+								Computed:    true,
+								Default:     int64default.StaticInt64(0),
+							},
+							"pool_history_interval": schema.Int64Attribute{
+								Description: "Interval for pool history retention (in hours).",
+								Optional:    true,
+								Computed:    true,
+								Default:     int64default.StaticInt64(0),
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -448,14 +543,27 @@ func (r *awsPoolResource) Create(ctx context.Context, req resource.CreateRequest
 	// defer to common function to create or update the resource
 
 	PlStored := r.CreateNested(ctx, &plan, &state, &resp.Diagnostics)
-	if diags.HasError() {
-		resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	if PlStored == nil {
+		resp.Diagnostics.AddError(
+			"Error Creating Pool",
+			"CreateNested returned nil without setting diagnostics",
+		)
 		return
 	}
 
 	// Map response body to schema and populate Computed attribute values
 	// convert int64 to string
 	plan.ID = types.StringValue(strconv.FormatInt(PlStored.Stored_data.ID, 10))
+
+	// Read the pool back to get computed fields like pool_stats
+	plan.Read(ctx, *r.client, &resp.Diagnostics, "resource", plan.ID.ValueString())
+	if resp.Diagnostics.HasError() {
+		return
+	}
 
 	tflog.Info(ctx, "Updating state")
 
@@ -525,6 +633,12 @@ func (r *awsPoolResource) Update(ctx context.Context, req resource.UpdateRequest
 	r.UpdateNested(ctx, &plan, &state, &resp.Diagnostics)
 	if diags.HasError() {
 		resp.Diagnostics.Append(diags...)
+		return
+	}
+
+	// Read back computed values after update
+	plan.Read(ctx, *r.client, &resp.Diagnostics, "aws", state.ID.ValueString())
+	if resp.Diagnostics.HasError() {
 		return
 	}
 

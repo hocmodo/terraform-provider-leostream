@@ -4,7 +4,6 @@ package leostream
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -23,6 +22,8 @@ type awsPoolResourceModel struct {
 	Running_desktops_threshold types.Int64  `tfsdk:"running_desktops_threshold"`
 	Pool_definition            types.Object `tfsdk:"pool_definition"`
 	Provision                  types.Object `tfsdk:"provision"`
+	Pool_stats                 types.Object `tfsdk:"pool_stats"`
+	Log                        types.Object `tfsdk:"log"`
 }
 
 // poolDefinitionModel maps filtering schema data
@@ -180,6 +181,70 @@ func (o awsAttributesModel) attrTypes() map[string]attr.Type {
 	}
 }
 
+// poolStatsModel maps pool stats schema data
+type awsPoolStatsModel struct {
+	Counts_updated      types.String `tfsdk:"counts_updated"`
+	Total_vm            types.Int64  `tfsdk:"total_vm"`
+	Total_agent_running types.Int64  `tfsdk:"total_agent_running"`
+	Total_vm_running    types.Int64  `tfsdk:"total_vm_running"`
+	Total_vm_stopped    types.Int64  `tfsdk:"total_vm_stopped"`
+	Total_vm_suspended  types.Int64  `tfsdk:"total_vm_suspended"`
+	Total_logged_in     types.Int64  `tfsdk:"total_logged_in"`
+	Total_connected     types.Int64  `tfsdk:"total_connected"`
+	Assigned_vm         types.Int64  `tfsdk:"assigned_vm"`
+	Available_vm        types.Int64  `tfsdk:"available_vm"`
+	Unavailable_vm      types.Int64  `tfsdk:"unavailable_vm"`
+}
+
+// attrTypes - return attribute types for this model
+func (o awsPoolStatsModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"counts_updated":      types.StringType,
+		"total_vm":            types.Int64Type,
+		"total_agent_running": types.Int64Type,
+		"total_vm_running":    types.Int64Type,
+		"total_vm_stopped":    types.Int64Type,
+		"total_vm_suspended":  types.Int64Type,
+		"total_logged_in":     types.Int64Type,
+		"total_connected":     types.Int64Type,
+		"assigned_vm":         types.Int64Type,
+		"available_vm":        types.Int64Type,
+		"unavailable_vm":      types.Int64Type,
+	}
+}
+
+// poolRetainHistoryModel maps retain history schema data
+type awsPoolRetainHistoryModel struct {
+	Pool_history_age      types.Int64 `tfsdk:"pool_history_age"`
+	Pool_history_interval types.Int64 `tfsdk:"pool_history_interval"`
+}
+
+// attrTypes - return attribute types for this model
+func (o awsPoolRetainHistoryModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"pool_history_age":      types.Int64Type,
+		"pool_history_interval": types.Int64Type,
+	}
+}
+
+// poolLogModel maps pool log schema data
+type awsPoolLogModel struct {
+	Log_information_threshold types.Int64  `tfsdk:"log_information_threshold"`
+	Log_warning_threshold     types.Int64  `tfsdk:"log_warning_threshold"`
+	Log_error_threshold       types.Int64  `tfsdk:"log_error_threshold"`
+	Retain_history            types.Object `tfsdk:"retain_history"`
+}
+
+// attrTypes - return attribute types for this model
+func (o awsPoolLogModel) attrTypes() map[string]attr.Type {
+	return map[string]attr.Type{
+		"log_information_threshold": types.Int64Type,
+		"log_warning_threshold":     types.Int64Type,
+		"log_error_threshold":       types.Int64Type,
+		"retain_history":            types.ObjectType{AttrTypes: awsPoolRetainHistoryModel{}.attrTypes()},
+	}
+}
+
 // common `Read` function for both data source and resource
 func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client, diags *diag.Diagnostics, rtype string, id string) {
 
@@ -269,6 +334,54 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 	// Add provision to pool model
 	o.Provision, _ = types.ObjectValueFrom(ctx, awsProvisionModel{}.attrTypes(), &stateProvision)
 
+	// Handle pool_stats attribute
+	if poolConfig.PoolStats != nil {
+		var statePoolStats awsPoolStatsModel
+		statePoolStats.Counts_updated = types.StringValue(poolConfig.PoolStats.Counts_updated)
+		statePoolStats.Total_vm = types.Int64Value(poolConfig.PoolStats.Total_vm)
+		statePoolStats.Total_agent_running = types.Int64Value(poolConfig.PoolStats.Total_agent_running)
+		statePoolStats.Total_vm_running = types.Int64Value(poolConfig.PoolStats.Total_vm_running)
+		statePoolStats.Total_vm_stopped = types.Int64Value(poolConfig.PoolStats.Total_vm_stopped)
+		statePoolStats.Total_vm_suspended = types.Int64Value(poolConfig.PoolStats.Total_vm_suspended)
+		statePoolStats.Total_logged_in = types.Int64Value(poolConfig.PoolStats.Total_logged_in)
+		statePoolStats.Total_connected = types.Int64Value(poolConfig.PoolStats.Total_connected)
+		statePoolStats.Assigned_vm = types.Int64Value(poolConfig.PoolStats.Assigned_vm)
+		statePoolStats.Available_vm = types.Int64Value(poolConfig.PoolStats.Available_vm)
+		statePoolStats.Unavailable_vm = types.Int64Value(poolConfig.PoolStats.Unavailable_vm)
+
+		// Add pool_stats to pool model
+		o.Pool_stats, _ = types.ObjectValueFrom(ctx, awsPoolStatsModel{}.attrTypes(), &statePoolStats)
+	}
+
+	// Handle log attribute - always set it with defaults if API doesn't provide values
+	var statePoolLog awsPoolLogModel
+	if poolConfig.Log != nil {
+		statePoolLog.Log_information_threshold = types.Int64Value(poolConfig.Log.Log_information_threshold)
+		statePoolLog.Log_warning_threshold = types.Int64Value(poolConfig.Log.Log_warning_threshold)
+		statePoolLog.Log_error_threshold = types.Int64Value(poolConfig.Log.Log_error_threshold)
+
+		// Handle retain_history nested attribute
+		var stateRetainHistory awsPoolRetainHistoryModel
+		stateRetainHistory.Pool_history_age = types.Int64Value(poolConfig.Log.Retain_history.Pool_history_age)
+		stateRetainHistory.Pool_history_interval = types.Int64Value(poolConfig.Log.Retain_history.Pool_history_interval)
+
+		// Add retain_history to log model
+		statePoolLog.Retain_history, _ = types.ObjectValueFrom(ctx, awsPoolRetainHistoryModel{}.attrTypes(), &stateRetainHistory)
+	} else {
+		// API didn't return log data, set defaults
+		statePoolLog.Log_information_threshold = types.Int64Value(0)
+		statePoolLog.Log_warning_threshold = types.Int64Value(0)
+		statePoolLog.Log_error_threshold = types.Int64Value(0)
+
+		var stateRetainHistory awsPoolRetainHistoryModel
+		stateRetainHistory.Pool_history_age = types.Int64Value(0)
+		stateRetainHistory.Pool_history_interval = types.Int64Value(0)
+		statePoolLog.Retain_history, _ = types.ObjectValueFrom(ctx, awsPoolRetainHistoryModel{}.attrTypes(), &stateRetainHistory)
+	}
+
+	// Add log to pool model
+	o.Log, _ = types.ObjectValueFrom(ctx, awsPoolLogModel{}.attrTypes(), &statePoolLog)
+
 }
 
 // `Create` function for the resource
@@ -303,13 +416,9 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	// Populate pool_definition Pool_attribute_join field in empty object from plan
 	poolDefinitionConfig.Pool_attribute_join = planPoolDefinition.Pool_attribute_join.ValueString()
 
-	// Populate pool_definition Server_ids field in empty object from plan (but only if it is not empty)
-	for _, server_id := range planPoolDefinition.Server_ids.Elements() {
-		// Convert the server_id to an int64 using an intermediary variable
-		server_id_int64, _ := strconv.ParseInt(server_id.String(), 10, 32)
-		// Append the server_id_int64 to the poolDefinitionConfig.Server_ids
-		poolDefinitionConfig.Server_ids = append(poolDefinitionConfig.Server_ids, server_id_int64)
-	}
+	// Initialize Server_ids as empty array to avoid null in JSON
+	poolDefinitionConfig.Server_ids = []int64{}
+	// Populate pool_definition Server_ids field in empty object from plan
 	*diags = planPoolDefinition.Server_ids.ElementsAs(ctx, &poolDefinitionConfig.Server_ids, false)
 	if diags.HasError() {
 		return nil
@@ -404,6 +513,49 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 
 	poolConfig.Provision = &provisionConfig
 
+	// Handle log attribute if provided
+	if !plan.Log.IsNull() && !plan.Log.IsUnknown() {
+		var planLog awsPoolLogModel
+		*diags = plan.Log.As(ctx, &planLog, basetypes.ObjectAsOptions{})
+		if diags.HasError() {
+			return nil
+		}
+
+		var logConfig leostream.PoolLog
+
+		if !planLog.Log_information_threshold.IsNull() && !planLog.Log_information_threshold.IsUnknown() {
+			logConfig.Log_information_threshold = planLog.Log_information_threshold.ValueInt64()
+		}
+		if !planLog.Log_warning_threshold.IsNull() && !planLog.Log_warning_threshold.IsUnknown() {
+			logConfig.Log_warning_threshold = planLog.Log_warning_threshold.ValueInt64()
+		}
+		if !planLog.Log_error_threshold.IsNull() && !planLog.Log_error_threshold.IsUnknown() {
+			logConfig.Log_error_threshold = planLog.Log_error_threshold.ValueInt64()
+		}
+
+		// Handle retain_history nested attribute if provided
+		if !planLog.Retain_history.IsNull() && !planLog.Retain_history.IsUnknown() {
+			var planRetainHistory awsPoolRetainHistoryModel
+			*diags = planLog.Retain_history.As(ctx, &planRetainHistory, basetypes.ObjectAsOptions{})
+			if diags.HasError() {
+				return nil
+			}
+
+			var retainHistoryConfig leostream.PoolRetainHistory
+
+			if !planRetainHistory.Pool_history_age.IsNull() && !planRetainHistory.Pool_history_age.IsUnknown() {
+				retainHistoryConfig.Pool_history_age = planRetainHistory.Pool_history_age.ValueInt64()
+			}
+			if !planRetainHistory.Pool_history_interval.IsNull() && !planRetainHistory.Pool_history_interval.IsUnknown() {
+				retainHistoryConfig.Pool_history_interval = planRetainHistory.Pool_history_interval.ValueInt64()
+			}
+
+			logConfig.Retain_history = retainHistoryConfig
+		}
+
+		poolConfig.Log = &logConfig
+	}
+
 	// Create new pool
 	PoolsStored, err := r.client.CreatePool(poolConfig, nil)
 
@@ -445,11 +597,12 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 
 	// Populate pool definition config from plan
 	poolDefinitionConfig.Restrict_by = planPoolDefinition.Restrict_by.ValueString()
-	if len(planPoolDefinition.Server_ids.Elements()) > 0 {
-		*diags = planPoolDefinition.Server_ids.ElementsAs(ctx, &poolDefinitionConfig.Server_ids, false)
-		if diags.HasError() {
-			return nil
-		}
+
+	// Initialize Server_ids as empty array to avoid null in JSON
+	poolDefinitionConfig.Server_ids = []int64{}
+	*diags = planPoolDefinition.Server_ids.ElementsAs(ctx, &poolDefinitionConfig.Server_ids, false)
+	if diags.HasError() {
+		return nil
 	}
 
 	// Assign the value of planPoolDefinition.Pool_attribute_join to poolDefinitionConfig.Pool_attribute_join
@@ -540,6 +693,49 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	provisionConfig.Center = &centerConfig
 
 	poolConfig.Provision = &provisionConfig
+
+	// Handle log attribute if provided
+	if !plan.Log.IsNull() && !plan.Log.IsUnknown() {
+		var planLog awsPoolLogModel
+		*diags = plan.Log.As(ctx, &planLog, basetypes.ObjectAsOptions{})
+		if diags.HasError() {
+			return nil
+		}
+
+		var logConfig leostream.PoolLog
+
+		if !planLog.Log_information_threshold.IsNull() && !planLog.Log_information_threshold.IsUnknown() {
+			logConfig.Log_information_threshold = planLog.Log_information_threshold.ValueInt64()
+		}
+		if !planLog.Log_warning_threshold.IsNull() && !planLog.Log_warning_threshold.IsUnknown() {
+			logConfig.Log_warning_threshold = planLog.Log_warning_threshold.ValueInt64()
+		}
+		if !planLog.Log_error_threshold.IsNull() && !planLog.Log_error_threshold.IsUnknown() {
+			logConfig.Log_error_threshold = planLog.Log_error_threshold.ValueInt64()
+		}
+
+		// Handle retain_history nested attribute if provided
+		if !planLog.Retain_history.IsNull() && !planLog.Retain_history.IsUnknown() {
+			var planRetainHistory awsPoolRetainHistoryModel
+			*diags = planLog.Retain_history.As(ctx, &planRetainHistory, basetypes.ObjectAsOptions{})
+			if diags.HasError() {
+				return nil
+			}
+
+			var retainHistoryConfig leostream.PoolRetainHistory
+
+			if !planRetainHistory.Pool_history_age.IsNull() && !planRetainHistory.Pool_history_age.IsUnknown() {
+				retainHistoryConfig.Pool_history_age = planRetainHistory.Pool_history_age.ValueInt64()
+			}
+			if !planRetainHistory.Pool_history_interval.IsNull() && !planRetainHistory.Pool_history_interval.IsUnknown() {
+				retainHistoryConfig.Pool_history_interval = planRetainHistory.Pool_history_interval.ValueInt64()
+			}
+
+			logConfig.Retain_history = retainHistoryConfig
+		}
+
+		poolConfig.Log = &logConfig
+	}
 
 	// Update pool
 	PoolsStored, err := r.client.UpdatePool(plan.ID.ValueString(), poolConfig, nil)
