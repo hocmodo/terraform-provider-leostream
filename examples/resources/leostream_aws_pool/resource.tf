@@ -34,4 +34,22 @@ resource "leostream_aws_pool" "pool_1" {
     provision_vm_id              = 15
     mark_deletable               = 1
   }
+
+  # Optional: Configure logging thresholds and history retention
+  log = {
+    log_information_threshold = 100
+    log_warning_threshold     = 50
+    log_error_threshold       = 10
+    retain_history = {
+      pool_history_age      = 90 # days
+      pool_history_interval = 24 # hours
+    }
+  }
+
+  # Note: pool_stats is a read-only computed field that provides
+  # real-time statistics about the pool, including:
+  # - total_vm, total_vm_running, total_vm_stopped, total_vm_suspended
+  # - total_agent_running, total_logged_in, total_connected
+  # - assigned_vm, available_vm, unavailable_vm
+  # - counts_updated (timestamp)
 }
