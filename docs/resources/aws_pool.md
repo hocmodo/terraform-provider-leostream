@@ -49,6 +49,24 @@ resource "leostream_aws_pool" "pool_1" {
     provision_vm_id              = 15
     mark_deletable               = 1
   }
+
+  # Optional: Configure logging thresholds and history retention
+  log = {
+    log_information_threshold = 100
+    log_warning_threshold     = 50
+    log_error_threshold       = 10
+    retain_history = {
+      pool_history_age      = 90   # days
+      pool_history_interval = 1440 # minutes
+    }
+  }
+
+  # Note: pool_stats is a read-only computed field that provides
+  # real-time statistics about the pool, including:
+  # - total_vm, total_vm_running, total_vm_stopped, total_vm_suspended
+  # - total_agent_running, total_logged_in, total_connected
+  # - assigned_vm, available_vm, unavailable_vm
+  # - counts_updated (timestamp)
 }
 ```
 
@@ -59,12 +77,37 @@ resource "leostream_aws_pool" "pool_1" {
 
 - `display_name` (String) Display name of the pool.
 - `id` (String) Unique identifier for the pool.
+- `log` (Attributes) Container for pool logging configuration including thresholds and history retention settings. (see [below for nested schema](#nestedatt--log))
 - `name` (String) Name of the pool.
 - `notes` (String) Notes for the pool.
 - `pool_definition` (Attributes) Pool definition (see [below for nested schema](#nestedatt--pool_definition))
 - `provision` (Attributes) Container for parameters related to Provisioning.
 				Provisioning parameters depends on what Centers are defined in the Connection Broker and which sets of values in every Center type (e.g. Azure, AWS, etc.) are defined. (see [below for nested schema](#nestedatt--provision))
 - `running_desktops_threshold` (Number) Running and available desktops in the pool.
+
+### Read-Only
+
+- `pool_stats` (Attributes) Container for pool statistics including VM counts and statuses. This is a read-only computed field. (see [below for nested schema](#nestedatt--pool_stats))
+
+<a id="nestedatt--log"></a>
+### Nested Schema for `log`
+
+Optional:
+
+- `log_error_threshold` (Number) Threshold for error level log messages.
+- `log_information_threshold` (Number) Threshold for information level log messages.
+- `log_warning_threshold` (Number) Threshold for warning level log messages.
+- `retain_history` (Attributes) Configuration for retaining pool history. (see [below for nested schema](#nestedatt--log--retain_history))
+
+<a id="nestedatt--log--retain_history"></a>
+### Nested Schema for `log.retain_history`
+
+Optional:
+
+- `pool_history_age` (Number) Age of pool history to retain (in days).
+- `pool_history_interval` (Number) Interval for pool history retention (in minutes).
+
+
 
 <a id="nestedatt--pool_definition"></a>
 ### Nested Schema for `pool_definition`
@@ -166,6 +209,7 @@ Optional:
 - `provision_vm_display_name` (String) The display name of the VM to be provisioned.
 - `provision_vm_id` (Number) The ID of the server which will do the provisioning, or 0 if URL notification only
 - `provision_vm_name` (String) The name of the VM to be provisioned.
+- `provision_vm_name_next_value` (Number) The next value for sequential VM names.
 
 <a id="nestedatt--provision--center"></a>
 ### Nested Schema for `provision.center`
@@ -182,6 +226,25 @@ Optional:
 - `name` (String) Name of the center.
 - `provision_method` (String) The method of provisioning. Currently only 'image' is supported.
 - `type` (String) Type of the center. Currently only AWS is supported: amazon
+
+
+
+<a id="nestedatt--pool_stats"></a>
+### Nested Schema for `pool_stats`
+
+Read-Only:
+
+- `assigned_vm` (Number) Number of assigned VMs in the pool.
+- `available_vm` (Number) Number of available VMs in the pool.
+- `counts_updated` (String) Timestamp when the pool statistics were last updated.
+- `total_agent_running` (Number) Total number of VMs with agent running.
+- `total_connected` (Number) Total number of active connections.
+- `total_logged_in` (Number) Total number of users logged in.
+- `total_vm` (Number) Total number of VMs in the pool.
+- `total_vm_running` (Number) Total number of VMs in running state.
+- `total_vm_stopped` (Number) Total number of VMs in stopped state.
+- `total_vm_suspended` (Number) Total number of VMs in suspended state.
+- `unavailable_vm` (Number) Number of unavailable VMs in the pool.
 
 ## Import
 
