@@ -125,7 +125,7 @@ or skip the terraform init if you have the dev_overrides in the terraformrc file
 
 ## More enhanced way for importing resources
 
-Use the [admin-cli](https://gitlab.hocmodo.nl/community/leostream-admin-cli) to pull the data from the Leostream API and get the id's
+Use the [admin-cli](https://gitlab.com/hocmodo/leostream-admin-cli) to pull the data from the Leostream API and get the id's
 
 ## AWS Pools
 
