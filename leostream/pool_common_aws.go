@@ -571,6 +571,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	}
 
 	// Create new pool
+	//PoolsStored, err := r.client.CreatePool(poolConfig, nil)
 	PoolsStored, err := createPoolWithCenterExtraFields(r.client, poolConfig, map[string]string{
 		"launch_template_version": planCenter.Launch_template_version.ValueString(),
 	}, nil)
@@ -755,6 +756,7 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	}
 
 	// Update pool
+	// PoolsStored, err := r.client.UpdatePool(plan.ID.ValueString(), poolConfig, nil)
 	PoolsStored, err := updatePoolWithCenterExtraFields(r.client, plan.ID.ValueString(), poolConfig, map[string]string{
 		"launch_template_version": planCenter.Launch_template_version.ValueString(),
 	}, nil)
