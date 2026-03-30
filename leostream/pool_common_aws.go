@@ -127,6 +127,7 @@ type awsCenterModel struct {
 	Name             types.String `tfsdk:"name"`
 	Type             types.String `tfsdk:"type"`
 	Provision_method types.String `tfsdk:"provision_method"`
+	Launch_template_version types.String `tfsdk:"launch_template_version"`
 	Aws_size         types.String `tfsdk:"aws_size"`
 	Aws_iam_name     types.String `tfsdk:"aws_iam_name"`
 	Aws_sub_net      types.String `tfsdk:"aws_sub_net"`
@@ -141,6 +142,7 @@ func (o awsCenterModel) attrTypes() map[string]attr.Type {
 		"name":             types.StringType,
 		"type":             types.StringType,
 		"provision_method": types.StringType,
+		"launch_template_version": types.StringType,
 		"aws_size":         types.StringType,
 		"aws_iam_name":     types.StringType,
 		"aws_sub_net":      types.StringType,
@@ -156,6 +158,7 @@ func (o awsCenterModel) defaultObject() map[string]attr.Value {
 		"name":             types.StringValue(""),
 		"type":             types.StringValue(""),
 		"provision_method": types.StringValue("image"),
+		"launch_template_version": types.StringValue(""),
 		"aws_size":         types.StringValue(""),
 		"aws_iam_name":     types.StringValue(""),
 		"aws_sub_net":      types.StringValue(""),
@@ -315,6 +318,7 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 	stateProvision.Provision_url = types.StringValue(poolConfig.Provision.Provision_url)
 	stateProvision.Provision_limits_enforce = types.Int64Value(poolConfig.Provision.Provision_limits_enforce)
 	stateProvision.Mark_deletable = types.Int64Value(poolConfig.Provision.Mark_deletable)
+	launchTemplateVersion, launchTemplateVersionErr := getPoolCenterStringField(client, id, "launch_template_version")
 
 	// if poolConfig.Provision.Center is not null, then unpack the center attributes
 	if poolConfig.Provision.Center != nil {
@@ -324,6 +328,11 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 		stateCenter.Name = types.StringValue(poolConfig.Provision.Center.Name)
 		stateCenter.Type = types.StringValue(poolConfig.Provision.Center.Type)
 		stateCenter.Provision_method = types.StringValue(poolConfig.Provision.Center.Provision_method)
+		if launchTemplateVersionErr == nil {
+			stateCenter.Launch_template_version = types.StringValue(launchTemplateVersion)
+		} else {
+			stateCenter.Launch_template_version = types.StringValue("")
+		}
 		stateCenter.Aws_size = types.StringValue(poolConfig.Provision.Center.Aws_size)
 		stateCenter.Aws_iam_name = types.StringValue(poolConfig.Provision.Center.Aws_iam_name)
 		stateCenter.Aws_sub_net = types.StringValue(poolConfig.Provision.Center.Aws_sub_net)
@@ -562,7 +571,9 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	}
 
 	// Create new pool
-	PoolsStored, err := r.client.CreatePool(poolConfig, nil)
+	PoolsStored, err := createPoolWithCenterExtraFields(r.client, poolConfig, map[string]string{
+		"launch_template_version": planCenter.Launch_template_version.ValueString(),
+	}, nil)
 
 	if err != nil {
 		diags.AddError(
@@ -744,7 +755,9 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	}
 
 	// Update pool
-	PoolsStored, err := r.client.UpdatePool(plan.ID.ValueString(), poolConfig, nil)
+	PoolsStored, err := updatePoolWithCenterExtraFields(r.client, plan.ID.ValueString(), poolConfig, map[string]string{
+		"launch_template_version": planCenter.Launch_template_version.ValueString(),
+	}, nil)
 
 	if err != nil {
 		diags.AddError(
@@ -756,3 +769,5 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 		return PoolsStored
 	}
 }
+
+
