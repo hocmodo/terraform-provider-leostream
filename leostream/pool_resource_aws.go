@@ -377,16 +377,10 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								Default:  stringdefault.StaticString(""),
 							},
 							"provision_method": schema.StringAttribute{
-								Description: "The method of provisioning. Supported values are 'image' and 'launch_template'.",
+								Description: "The method of provisioning. Currently only 'image' is supported.",
 								Optional:    true,
 								Computed:    true,
 								Default:     stringdefault.StaticString("image"),
-							},
-							"launch_template_version": schema.StringAttribute{
-								Description: "Launch template version to use when provision_method is launch_template.",
-								Optional:    true,
-								Computed:    true,
-								Default:     stringdefault.StaticString(""),
 							},
 							"aws_iam_name": schema.StringAttribute{
 								Description: "The name of the IAM role to use for the instance.",
