@@ -318,7 +318,6 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 	stateProvision.Provision_url = types.StringValue(poolConfig.Provision.Provision_url)
 	stateProvision.Provision_limits_enforce = types.Int64Value(poolConfig.Provision.Provision_limits_enforce)
 	stateProvision.Mark_deletable = types.Int64Value(poolConfig.Provision.Mark_deletable)
-	launchTemplateVersion, launchTemplateVersionErr := getPoolCenterStringField(client, id, "launch_template_version")
 
 	// if poolConfig.Provision.Center is not null, then unpack the center attributes
 	if poolConfig.Provision.Center != nil {
@@ -328,11 +327,7 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 		stateCenter.Name = types.StringValue(poolConfig.Provision.Center.Name)
 		stateCenter.Type = types.StringValue(poolConfig.Provision.Center.Type)
 		stateCenter.Provision_method = types.StringValue(poolConfig.Provision.Center.Provision_method)
-		if launchTemplateVersionErr == nil {
-			stateCenter.Launch_template_version = types.StringValue(launchTemplateVersion)
-		} else {
-			stateCenter.Launch_template_version = types.StringValue("")
-		}
+		stateCenter.Launch_template_version = types.StringValue(poolConfig.Provision.Center.Launch_template_version)
 		stateCenter.Aws_size = types.StringValue(poolConfig.Provision.Center.Aws_size)
 		stateCenter.Aws_iam_name = types.StringValue(poolConfig.Provision.Center.Aws_iam_name)
 		stateCenter.Aws_sub_net = types.StringValue(poolConfig.Provision.Center.Aws_sub_net)
@@ -517,6 +512,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Name = planCenter.Name.ValueString()
 	centerConfig.Type = planCenter.Type.ValueString()
 	centerConfig.Provision_method = planCenter.Provision_method.ValueString()
+	centerConfig.Launch_template_version = planCenter.Launch_template_version.ValueString()
 	centerConfig.Aws_size = planCenter.Aws_size.ValueString()
 	centerConfig.Aws_iam_name = planCenter.Aws_iam_name.ValueString()
 	centerConfig.Aws_sub_net = planCenter.Aws_sub_net.ValueString()
@@ -571,10 +567,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	}
 
 	// Create new pool
-	//PoolsStored, err := r.client.CreatePool(poolConfig, nil)
-	PoolsStored, err := createPoolWithCenterExtraFields(r.client, poolConfig, map[string]string{
-		"launch_template_version": planCenter.Launch_template_version.ValueString(),
-	}, nil)
+	PoolsStored, err := r.client.CreatePool(poolConfig, nil)
 
 	if err != nil {
 		diags.AddError(
@@ -702,6 +695,7 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Name = planCenter.Name.ValueString()
 	centerConfig.Type = planCenter.Type.ValueString()
 	centerConfig.Provision_method = planCenter.Provision_method.ValueString()
+	centerConfig.Launch_template_version = planCenter.Launch_template_version.ValueString()
 	centerConfig.Aws_size = planCenter.Aws_size.ValueString()
 	centerConfig.Aws_iam_name = planCenter.Aws_iam_name.ValueString()
 	centerConfig.Aws_sub_net = planCenter.Aws_sub_net.ValueString()
@@ -756,10 +750,7 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	}
 
 	// Update pool
-	// PoolsStored, err := r.client.UpdatePool(plan.ID.ValueString(), poolConfig, nil)
-	PoolsStored, err := updatePoolWithCenterExtraFields(r.client, plan.ID.ValueString(), poolConfig, map[string]string{
-		"launch_template_version": planCenter.Launch_template_version.ValueString(),
-	}, nil)
+	PoolsStored, err := r.client.UpdatePool(plan.ID.ValueString(), poolConfig, nil)
 
 	if err != nil {
 		diags.AddError(
