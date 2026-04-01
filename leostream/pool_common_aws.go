@@ -127,6 +127,7 @@ type awsCenterModel struct {
 	Name             types.String `tfsdk:"name"`
 	Type             types.String `tfsdk:"type"`
 	Provision_method types.String `tfsdk:"provision_method"`
+	Launch_template_version types.String `tfsdk:"launch_template_version"`
 	Aws_size         types.String `tfsdk:"aws_size"`
 	Aws_iam_name     types.String `tfsdk:"aws_iam_name"`
 	Aws_sub_net      types.String `tfsdk:"aws_sub_net"`
@@ -141,6 +142,7 @@ func (o awsCenterModel) attrTypes() map[string]attr.Type {
 		"name":             types.StringType,
 		"type":             types.StringType,
 		"provision_method": types.StringType,
+		"launch_template_version": types.StringType,
 		"aws_size":         types.StringType,
 		"aws_iam_name":     types.StringType,
 		"aws_sub_net":      types.StringType,
@@ -156,6 +158,7 @@ func (o awsCenterModel) defaultObject() map[string]attr.Value {
 		"name":             types.StringValue(""),
 		"type":             types.StringValue(""),
 		"provision_method": types.StringValue("image"),
+		"launch_template_version": types.StringValue(""),
 		"aws_size":         types.StringValue(""),
 		"aws_iam_name":     types.StringValue(""),
 		"aws_sub_net":      types.StringValue(""),
@@ -324,6 +327,7 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 		stateCenter.Name = types.StringValue(poolConfig.Provision.Center.Name)
 		stateCenter.Type = types.StringValue(poolConfig.Provision.Center.Type)
 		stateCenter.Provision_method = types.StringValue(poolConfig.Provision.Center.Provision_method)
+		stateCenter.Launch_template_version = types.StringValue(poolConfig.Provision.Center.Launch_template_version)
 		stateCenter.Aws_size = types.StringValue(poolConfig.Provision.Center.Aws_size)
 		stateCenter.Aws_iam_name = types.StringValue(poolConfig.Provision.Center.Aws_iam_name)
 		stateCenter.Aws_sub_net = types.StringValue(poolConfig.Provision.Center.Aws_sub_net)
@@ -508,6 +512,7 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Name = planCenter.Name.ValueString()
 	centerConfig.Type = planCenter.Type.ValueString()
 	centerConfig.Provision_method = planCenter.Provision_method.ValueString()
+	centerConfig.Launch_template_version = planCenter.Launch_template_version.ValueString()
 	centerConfig.Aws_size = planCenter.Aws_size.ValueString()
 	centerConfig.Aws_iam_name = planCenter.Aws_iam_name.ValueString()
 	centerConfig.Aws_sub_net = planCenter.Aws_sub_net.ValueString()
@@ -690,6 +695,7 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Name = planCenter.Name.ValueString()
 	centerConfig.Type = planCenter.Type.ValueString()
 	centerConfig.Provision_method = planCenter.Provision_method.ValueString()
+	centerConfig.Launch_template_version = planCenter.Launch_template_version.ValueString()
 	centerConfig.Aws_size = planCenter.Aws_size.ValueString()
 	centerConfig.Aws_iam_name = planCenter.Aws_iam_name.ValueString()
 	centerConfig.Aws_sub_net = planCenter.Aws_sub_net.ValueString()
@@ -756,3 +762,5 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 		return PoolsStored
 	}
 }
+
+
