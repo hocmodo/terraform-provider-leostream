@@ -55,18 +55,22 @@ Run the following command to build the provider, which will create the binary in
 % make install
 ```
 
+### Create documentation
+
+You can generate documentation from the source by using the accompanied tools:
+
+```shell
+cd tools; go generate ./...
+```
+
 ### Debugging
 
-I can recommend using tools to debug your code.
-
-First place to start reading this [page](https://developer.hashicorp.com/terraform/plugin/debugging) by Hashicorp on how to debug a provider.
-
-Second tip is to use a local proxy to see what is happening between the provider and the API. I can recommend using [mitmproxy](https://mitmproxy.org/).
+For detailed instructions on debugging — including running the provider under Delve and intercepting HTTP traffic with mitmproxy — see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Run integration tests
 
 There are also integration tests that can be run to verify the provider's functionality. To run the integration tests, you first need a running Leostream instance. Currently there is no way to run the tests without a running Leostream instance.
-You can make sure the right data is available by using [the leostream-admin-cli tool](https://gitlab.hocmodo.nl/community/leostream-admin-cli) to add sample data.
+You can make sure the right data is available by using [the leostream-admin-cli tool](https://gitlab.com/hocmodo/leostream-admin-cli) to add sample data.
 
 ### Add a test center for testing the centers datasource
 
@@ -117,7 +121,7 @@ or skip the terraform init if you have the dev_overrides in the terraformrc file
 
 ## More enhanced way for importing resources
 
-Use the [admin-cli](https://gitlab.hocmodo.nl/community/leostream-admin-cli) to pull the data from the Leostream API and get the id's
+Use the [admin-cli](https://gitlab.com/hocmodo/leostream-admin-cli) to pull the data from the Leostream API and get the id's
 
 ## AWS Pools
 

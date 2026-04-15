@@ -41,8 +41,8 @@ resource "leostream_aws_pool" "pool_1" {
     log_warning_threshold     = 50
     log_error_threshold       = 10
     retain_history = {
-      pool_history_age      = 90 # days
-      pool_history_interval = 24 # hours
+      pool_history_age      = 90   # days
+      pool_history_interval = 1440 # minutes
     }
   }
 
