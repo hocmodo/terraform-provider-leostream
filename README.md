@@ -65,11 +65,7 @@ cd tools; go generate ./...
 
 ### Debugging
 
-I can recommend using tools to debug your code.
-
-First place to start reading this [page](https://developer.hashicorp.com/terraform/plugin/debugging) by Hashicorp on how to debug a provider.
-
-Second tip is to use a local proxy to see what is happening between the provider and the API. I can recommend using [mitmproxy](https://mitmproxy.org/).
+For detailed instructions on debugging — including running the provider under Delve and intercepting HTTP traffic with mitmproxy — see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Run integration tests
 
