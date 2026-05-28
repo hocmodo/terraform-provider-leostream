@@ -22,9 +22,18 @@ resource "leostream_aws_pool" "pool_1" {
     provision_server_id = 51
     provision_vm_name   = "desktop-{SEQUENCE}"
     center = {
-      name = "aws-center-us-east-1"
-      type = "amazon"
-      id   = 51
+      name                           = "aws-center-us-east-1"
+      type                           = "amazon"
+      id                             = 51
+      provision_method               = "image" # or "launch_template"
+      launch_template_version        = ""      # required when provision_method = "launch_template"
+      aws_size                       = "t3.medium"
+      aws_iam_name                   = ""
+      aws_sub_net                    = ""
+      aws_sec_group                  = ""
+      aws_vpc_id                     = ""
+      aws_deploy_as_managed_instance = 0  # set to 1 to deploy as WorkSpaces Core Managed Instance
+      aws_mi_tenancy                 = "" # "" = default, "default" = shared, "dedicated" = dedicated
     }
     provision_on_off             = 0
     provision_max                = 0
