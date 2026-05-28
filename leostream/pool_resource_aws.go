@@ -412,6 +412,18 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								Computed:    true,
 								Default:     stringdefault.StaticString(""),
 							},
+							"aws_deploy_as_managed_instance": schema.Int64Attribute{
+								Description: "0 or 1: Deploy this instance as a WorkSpaces Core Managed Instance.",
+								Optional:    true,
+								Computed:    true,
+								Default:     int64default.StaticInt64(0),
+							},
+							"aws_mi_tenancy": schema.StringAttribute{
+								Description: `The AWS Managed Instance tenancy type: "" = default, "default" = Shared, "dedicated" = Dedicated.`,
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
+							},
 						},
 					},
 				},
