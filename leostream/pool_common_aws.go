@@ -123,47 +123,53 @@ func (o awsProvisionModel) defaultObject() map[string]attr.Value {
 
 // centerModel maps center schema data
 type awsCenterModel struct {
-	ID               types.Int64  `tfsdk:"id"`
-	Name             types.String `tfsdk:"name"`
-	Type             types.String `tfsdk:"type"`
-	Provision_method types.String `tfsdk:"provision_method"`
-	Launch_template_version types.String `tfsdk:"launch_template_version"`
-	Aws_size         types.String `tfsdk:"aws_size"`
-	Aws_iam_name     types.String `tfsdk:"aws_iam_name"`
-	Aws_sub_net      types.String `tfsdk:"aws_sub_net"`
-	Aws_sec_group    types.String `tfsdk:"aws_sec_group"`
-	Aws_vpc_id       types.String `tfsdk:"aws_vpc_id"`
+	ID                             types.Int64  `tfsdk:"id"`
+	Name                           types.String `tfsdk:"name"`
+	Type                           types.String `tfsdk:"type"`
+	Provision_method               types.String `tfsdk:"provision_method"`
+	Launch_template_version        types.String `tfsdk:"launch_template_version"`
+	Aws_size                       types.String `tfsdk:"aws_size"`
+	Aws_iam_name                   types.String `tfsdk:"aws_iam_name"`
+	Aws_sub_net                    types.String `tfsdk:"aws_sub_net"`
+	Aws_sec_group                  types.String `tfsdk:"aws_sec_group"`
+	Aws_vpc_id                     types.String `tfsdk:"aws_vpc_id"`
+	Aws_deploy_as_managed_instance types.Int64  `tfsdk:"aws_deploy_as_managed_instance"`
+	Aws_mi_tenancy                 types.String `tfsdk:"aws_mi_tenancy"`
 }
 
 // attrTypes - return attribute types for this model
 func (o awsCenterModel) attrTypes() map[string]attr.Type {
 	return map[string]attr.Type{
-		"id":               types.Int64Type,
-		"name":             types.StringType,
-		"type":             types.StringType,
-		"provision_method": types.StringType,
-		"launch_template_version": types.StringType,
-		"aws_size":         types.StringType,
-		"aws_iam_name":     types.StringType,
-		"aws_sub_net":      types.StringType,
-		"aws_sec_group":    types.StringType,
-		"aws_vpc_id":       types.StringType,
+		"id":                             types.Int64Type,
+		"name":                           types.StringType,
+		"type":                           types.StringType,
+		"provision_method":               types.StringType,
+		"launch_template_version":        types.StringType,
+		"aws_size":                       types.StringType,
+		"aws_iam_name":                   types.StringType,
+		"aws_sub_net":                    types.StringType,
+		"aws_sec_group":                  types.StringType,
+		"aws_vpc_id":                     types.StringType,
+		"aws_deploy_as_managed_instance": types.Int64Type,
+		"aws_mi_tenancy":                 types.StringType,
 	}
 }
 
 // defaultObject - return default object for this model
 func (o awsCenterModel) defaultObject() map[string]attr.Value {
 	return map[string]attr.Value{
-		"id":               types.Int64Value(0),
-		"name":             types.StringValue(""),
-		"type":             types.StringValue(""),
-		"provision_method": types.StringValue("image"),
-		"launch_template_version": types.StringValue(""),
-		"aws_size":         types.StringValue(""),
-		"aws_iam_name":     types.StringValue(""),
-		"aws_sub_net":      types.StringValue(""),
-		"aws_sec_group":    types.StringValue(""),
-		"aws_vpc_id":       types.StringValue(""),
+		"id":                             types.Int64Value(0),
+		"name":                           types.StringValue(""),
+		"type":                           types.StringValue(""),
+		"provision_method":               types.StringValue("image"),
+		"launch_template_version":        types.StringValue(""),
+		"aws_size":                       types.StringValue(""),
+		"aws_iam_name":                   types.StringValue(""),
+		"aws_sub_net":                    types.StringValue(""),
+		"aws_sec_group":                  types.StringValue(""),
+		"aws_vpc_id":                     types.StringValue(""),
+		"aws_deploy_as_managed_instance": types.Int64Value(0),
+		"aws_mi_tenancy":                 types.StringValue(""),
 	}
 }
 
@@ -333,6 +339,8 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 		stateCenter.Aws_sub_net = types.StringValue(poolConfig.Provision.Center.Aws_sub_net)
 		stateCenter.Aws_sec_group = types.StringValue(poolConfig.Provision.Center.Aws_sec_group)
 		stateCenter.Aws_vpc_id = types.StringValue(poolConfig.Provision.Center.Aws_vpc_id)
+		stateCenter.Aws_deploy_as_managed_instance = types.Int64Value(poolConfig.Provision.Center.Aws_deploy_as_managed_instance)
+		stateCenter.Aws_mi_tenancy = types.StringValue(poolConfig.Provision.Center.Aws_mi_tenancy)
 
 		// Add center to provision model
 		stateProvision.Center, _ = types.ObjectValueFrom(ctx, awsCenterModel{}.attrTypes(), &stateCenter)
@@ -518,6 +526,8 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Aws_sub_net = planCenter.Aws_sub_net.ValueString()
 	centerConfig.Aws_sec_group = planCenter.Aws_sec_group.ValueString()
 	centerConfig.Aws_vpc_id = planCenter.Aws_vpc_id.ValueString()
+	centerConfig.Aws_deploy_as_managed_instance = planCenter.Aws_deploy_as_managed_instance.ValueInt64()
+	centerConfig.Aws_mi_tenancy = planCenter.Aws_mi_tenancy.ValueString()
 
 	provisionConfig.Center = &centerConfig
 
@@ -701,6 +711,8 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Aws_sub_net = planCenter.Aws_sub_net.ValueString()
 	centerConfig.Aws_sec_group = planCenter.Aws_sec_group.ValueString()
 	centerConfig.Aws_vpc_id = planCenter.Aws_vpc_id.ValueString()
+	centerConfig.Aws_deploy_as_managed_instance = planCenter.Aws_deploy_as_managed_instance.ValueInt64()
+	centerConfig.Aws_mi_tenancy = planCenter.Aws_mi_tenancy.ValueString()
 
 	provisionConfig.Center = &centerConfig
 
@@ -762,5 +774,3 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 		return PoolsStored
 	}
 }
-
-
