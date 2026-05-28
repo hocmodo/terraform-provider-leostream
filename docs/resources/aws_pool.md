@@ -37,9 +37,18 @@ resource "leostream_aws_pool" "pool_1" {
     provision_server_id = 51
     provision_vm_name   = "desktop-{SEQUENCE}"
     center = {
-      name = "aws-center-us-east-1"
-      type = "amazon"
-      id   = 51
+      name                           = "aws-center-us-east-1"
+      type                           = "amazon"
+      id                             = 51
+      provision_method               = "image" # or "launch_template"
+      launch_template_version        = ""      # required when provision_method = "launch_template"
+      aws_size                       = "t3.medium"
+      aws_iam_name                   = ""
+      aws_sub_net                    = ""
+      aws_sec_group                  = ""
+      aws_vpc_id                     = ""
+      aws_deploy_as_managed_instance = 0  # set to 1 to deploy as WorkSpaces Core Managed Instance
+      aws_mi_tenancy                 = "" # "" = default, "default" = shared, "dedicated" = dedicated
     }
     provision_on_off             = 0
     provision_max                = 0
@@ -216,15 +225,18 @@ Optional:
 
 Optional:
 
+- `aws_deploy_as_managed_instance` (Number) 0 or 1: Deploy this instance as a WorkSpaces Core Managed Instance.
 - `aws_iam_name` (String) The name of the IAM role to use for the instance.
+- `aws_mi_tenancy` (String) The AWS Managed Instance tenancy type: "" = default, "default" = Shared, "dedicated" = Dedicated.
 - `aws_sec_group` (String) The security group name to use for the instance.
 - `aws_size` (String) The size of the instance to provision.
 								eg. t2.micro
 - `aws_sub_net` (String) The subnet ID to use for the instance.
 - `aws_vpc_id` (String) The VPC ID to use for the instance.
 - `id` (Number) Unique identifier for the center.
+- `launch_template_version` (String) Launch template version to use when provision_method is launch_template.
 - `name` (String) Name of the center.
-- `provision_method` (String) The method of provisioning. Currently only 'image' is supported.
+- `provision_method` (String) The method of provisioning. Supported values are 'image' and 'launch_template'.
 - `type` (String) Type of the center. Currently only AWS is supported: amazon
 
 
