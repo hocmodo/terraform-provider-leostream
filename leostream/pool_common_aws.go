@@ -135,6 +135,8 @@ type awsCenterModel struct {
 	Aws_vpc_id                     types.String `tfsdk:"aws_vpc_id"`
 	Aws_deploy_as_managed_instance types.Int64  `tfsdk:"aws_deploy_as_managed_instance"`
 	Aws_mi_tenancy                 types.String `tfsdk:"aws_mi_tenancy"`
+	Aws_deploy_mode                types.String `tfsdk:"aws_deploy_mode"`
+	Aws_mi_size                    types.String `tfsdk:"aws_mi_size"`
 }
 
 // attrTypes - return attribute types for this model
@@ -152,6 +154,8 @@ func (o awsCenterModel) attrTypes() map[string]attr.Type {
 		"aws_vpc_id":                     types.StringType,
 		"aws_deploy_as_managed_instance": types.Int64Type,
 		"aws_mi_tenancy":                 types.StringType,
+		"aws_deploy_mode":                types.StringType,
+		"aws_mi_size":                    types.StringType,
 	}
 }
 
@@ -170,6 +174,8 @@ func (o awsCenterModel) defaultObject() map[string]attr.Value {
 		"aws_vpc_id":                     types.StringValue(""),
 		"aws_deploy_as_managed_instance": types.Int64Value(0),
 		"aws_mi_tenancy":                 types.StringValue(""),
+		"aws_deploy_mode":                types.StringValue(""),
+		"aws_mi_size":                    types.StringValue(""),
 	}
 }
 
@@ -341,6 +347,8 @@ func (o *awsPoolResourceModel) Read(ctx context.Context, client leostream.Client
 		stateCenter.Aws_vpc_id = types.StringValue(poolConfig.Provision.Center.Aws_vpc_id)
 		stateCenter.Aws_deploy_as_managed_instance = types.Int64Value(poolConfig.Provision.Center.Aws_deploy_as_managed_instance)
 		stateCenter.Aws_mi_tenancy = types.StringValue(poolConfig.Provision.Center.Aws_mi_tenancy)
+		stateCenter.Aws_deploy_mode = types.StringValue(poolConfig.Provision.Center.Aws_deploy_mode)
+		stateCenter.Aws_mi_size = types.StringValue(poolConfig.Provision.Center.Aws_mi_size)
 
 		// Add center to provision model
 		stateProvision.Center, _ = types.ObjectValueFrom(ctx, awsCenterModel{}.attrTypes(), &stateCenter)
@@ -528,6 +536,8 @@ func (r *awsPoolResource) CreateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Aws_vpc_id = planCenter.Aws_vpc_id.ValueString()
 	centerConfig.Aws_deploy_as_managed_instance = planCenter.Aws_deploy_as_managed_instance.ValueInt64()
 	centerConfig.Aws_mi_tenancy = planCenter.Aws_mi_tenancy.ValueString()
+	centerConfig.Aws_deploy_mode = planCenter.Aws_deploy_mode.ValueString()
+	centerConfig.Aws_mi_size = planCenter.Aws_mi_size.ValueString()
 
 	provisionConfig.Center = &centerConfig
 
@@ -713,6 +723,8 @@ func (r *awsPoolResource) UpdateNested(ctx context.Context, plan *awsPoolResourc
 	centerConfig.Aws_vpc_id = planCenter.Aws_vpc_id.ValueString()
 	centerConfig.Aws_deploy_as_managed_instance = planCenter.Aws_deploy_as_managed_instance.ValueInt64()
 	centerConfig.Aws_mi_tenancy = planCenter.Aws_mi_tenancy.ValueString()
+	centerConfig.Aws_deploy_mode = planCenter.Aws_deploy_mode.ValueString()
+	centerConfig.Aws_mi_size = planCenter.Aws_mi_size.ValueString()
 
 	provisionConfig.Center = &centerConfig
 
