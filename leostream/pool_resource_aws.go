@@ -424,6 +424,18 @@ func (r *awsPoolResource) Schema(_ context.Context, _ resource.SchemaRequest, re
 								Computed:    true,
 								Default:     stringdefault.StaticString(""),
 							},
+							"aws_deploy_mode": schema.StringAttribute{
+								Description: `AWS deploy mode: "standard" or "managed_instance". Modern replacement for aws_deploy_as_managed_instance.`,
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
+							},
+							"aws_mi_size": schema.StringAttribute{
+								Description: "The WorkSpaces Core Managed Instance size, e.g. g5.2xlarge. Used when aws_deploy_mode is managed_instance.",
+								Optional:    true,
+								Computed:    true,
+								Default:     stringdefault.StaticString(""),
+							},
 						},
 					},
 				},
