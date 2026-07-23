@@ -9,7 +9,7 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.23.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.10.0
-	gitlab.com/hocmodo/leostream-client-go v0.1.9
+	gitlab.com/hocmodo/leostream-client-go v0.2.0
 )
 
 require (
